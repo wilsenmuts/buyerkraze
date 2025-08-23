@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ article.title }} - BuyKraze{% endblock %}
+
+{% block content %}
+    <section class="py-16 bg-white" style="background-color: #FFFFFF;">
+        <div class="container mx-auto px-4 max-w-3xl">
+            <h1 class="text-4xl font-bold mb-6 text-center" style="color: #4169E1;">{{ article.title }}</h1>
+            {% if article.top_image %}
+            <img src="{{ article.top_image.url }}" alt="Top Image" class="w-full h-auto mb-8 rounded-lg shadow-md" style="border: 2px solid #B8860B;">
+            {% else %}
+            <img src="https://via.placeholder.com/1200x400?text=Article+Top+Image" alt="Top Image Placeholder" class="w-full h-auto mb-8 rounded-lg shadow-md">
+            {% endif %}
+            <p class="text-lg leading-relaxed mb-8" style="color: #4169E1;">{{ article.content }}</p>
+            {% if article.featured_image %}
+            <img src="{{ article.featured_image.url }}" alt="Featured Image" class="w-full h-auto mb-8 rounded-lg shadow-md" style="border: 2px solid #B8860B;">
+            {% else %}
+            <img src="https://via.placeholder.com/1200x600?text=Featured+Image" alt="Featured Image Placeholder" class="w-full h-auto mb-8 rounded-lg shadow-md">
+            {% endif %}
+            <p class="text-sm text-gray-600 text-center mb-8">Published: {{ article.published_date }} | Updated: {{ article.updated_date }}</p>
+            <div class="text-center">
+                <a href="{% url 'article_list' %}" class="bg-blue-800 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-900" style="background-color: #4169E1; color: #FFFFFF;">Back to Articles</a>
+            </div>
+        </div>
+    </section>
+{% endblock %}

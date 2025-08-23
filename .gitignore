@@ -1,0 +1,34 @@
+# Ignore Django files
+*.log
+*.pot
+*.pyc
+__pycache__/
+media/
+
+# Ignore PythonAnywhere files
+.pythonanywhere/
+
+# Ignore IDE files
+.vscode/
+.idea/
+*.iml
+
+# Ignore operating system files
+.DS_Store
+Thumbs.db
+
+# Ignore virtualenv files
+venv/
+env/
+
+# Ignore other files
+*.sqlite3
+*.db
+*.env
+*.secret
+*.key
+*.pem
+*.crt
+*.csr
+*.conf
+local_settings.py

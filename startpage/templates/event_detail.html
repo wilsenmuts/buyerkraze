@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ event.title }} - BuyKraze{% endblock %}
+
+{% block content %}
+    <section class="py-16 bg-white" style="background-color: #FFFFFF;">
+        <div class="container mx-auto px-4 max-w-3xl">
+            <h1 class="text-4xl font-bold mb-6 text-center" style="color: #4169E1;">{{ event.title }}</h1>
+            {% if event.featured_image %}
+            <img src="{{ event.featured_image.url }}" alt="Featured Image" class="w-full h-auto mb-8 rounded-lg shadow-md" style="border: 2px solid #B8860B;">
+            {% else %}
+            <img src="https://via.placeholder.com/1200x600?text=Event+Featured+Image" alt="Featured Image Placeholder" class="w-full h-auto mb-8 rounded-lg shadow-md">
+            {% endif %}
+            <p class="text-lg leading-relaxed mb-6" style="color: #4169E1;">{{ event.description }}</p>
+            <p class="text-md mb-2" style="color: #4169E1;">Date: {{ event.event_date }}</p>
+            <p class="text-md mb-2" style="color: #4169E1;">Location: {{ event.location }} ({{ event.country_region }})</p>
+            {% if event.contact_email %}
+            <p class="text-md mb-2" style="color: #4169E1;">Contact Email: {{ event.contact_email }}</p>
+            {% endif %}
+            {% if event.contact_number %}
+            <p class="text-md mb-6" style="color: #4169E1;">Contact Number: {{ event.contact_number }}</p>
+            {% endif %}
+
+            {% if event.is_subscribable %}
+            <h2 class="text-3xl font-bold mb-4 text-center" style="color: #B8860B;">Subscribe to Join the Excitement!</h2>
+            <form method="post" class="bg-blue-50 p-8 rounded-lg shadow-md" style="background-color: #F0F8FF;">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="w-full py-3 px-4 rounded-md font-semibold hover:bg-blue-900" style="background-color: #4169E1; color: #FFFFFF;">Subscribe Now</button>
+            </form>
+            {% endif %}
+
+            <div class="mt-8 text-center">
+                <a href="{% url 'event_list' %}" class="text-lg hover:text-yellow-600" style="color: #4169E1;">Back to Events</a>
+            </div>
+        </div>
+    </section>
+{% endblock %}

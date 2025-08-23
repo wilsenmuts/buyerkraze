@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Events - BuyKraze{% endblock %}
+
+{% block content %}
+    <section class="py-16 bg-white" style="background-color: #FFFFFF;">
+        <div class="container mx-auto px-4">
+            <h1 class="text-4xl font-bold mb-12 text-center" style="color: #4169E1;">Upcoming Events & Webinars</h1>
+            <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {% for event in events %}
+                <li class="bg-blue-50 p-6 rounded-lg shadow-md" style="background-color: #F0F8FF; border: 1px solid #4169E1;">
+                    <a href="{% url 'event_detail' event.pk %}" class="text-2xl font-semibold hover:text-yellow-600 block mb-2" style="color: #4169E1;">{{ event.title }}</a>
+                    <p class="text-sm text-gray-600">{{ event.event_date }} - {{ event.location }} ({{ event.country_region }})</p>
+                </li>
+                {% empty %}
+                <li class="col-span-full text-center text-lg" style="color: #4169E1;">No events yet. Exciting ones coming soon!</li>
+                {% endfor %}
+            </ul>
+            <div class="mt-8 text-center">
+                <a href="{% url 'start' %}" class="text-lg hover:text-yellow-600" style="color: #4169E1;">Back to Home</a>
+            </div>
+        </div>
+    </section>
+{% endblock %}

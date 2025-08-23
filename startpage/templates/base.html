@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}BuyerKraze{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="{% static 'js/start.js' %}" defer></script>
+    <style>
+        body {
+            background-color: #FFFFFF; /* White */
+            color: #4169E1; /* Royal blue */
+            font-family: 'Arial', sans-serif;
+        }
+        h1, h2, h3 {
+            color:rgb(229, 177, 45); /* Deep yellow */
+        }
+        a {
+            color: #4169E1; /* Royal blue */
+        }
+        a:hover {
+            color:rgb(239, 183, 42); /* Deep yellow */
+        }
+        button, input[type="submit"] {
+            background-color: #4169E1; /* Royal blue */
+            color: #FFFFFF; /* White */
+        }
+        button:hover, input[type="submit"]:hover {
+            background-color:rgb(237, 188, 65); /* Deep yellow */
+        }
+    </style>
+    <script>
+        function handlePreviousSelection(selected) {
+            if (confirm(`You previously selected ${selected}. Do you want to proceed with this or choose a new country?`)) {
+                // Proceed with previous
+                window.location.href = `/redirect?country=${selected}`;  // Adjust if needed; for simplicity, form handles
+            } else {
+                // Choose new; form is already there
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen flex flex-col">
+    <header class="bg-blue-800 text-white py-4 shadow-md" style="background-color: #4169E1;">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <h1 class="text-3xl font-bold" style="color: #FFFFFF;">BuyerKraze</h1>
+            <nav>
+                <ul class="flex space-x-6">
+                    <li><a href="{% url 'start' %}" class="hover:text-yellow-300" style="color: #FFFFFF;">Home</a></li>
+                    <li><a href="{% url 'article_list' %}" class="hover:text-yellow-300" style="color: #FFFFFF;">Articles</a></li>
+                    <li><a href="{% url 'event_list' %}" class="hover:text-yellow-300" style="color: #FFFFFF;">Events</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <main class="flex-grow">
+        {% block content %}
+        {% endblock %}
+    </main>
+    <footer class="bg-blue-800 text-white py-4 text-center" style="background-color: #4169E1; color: #FFFFFF;">
+        <p>&copy; 2025 BuyerKraze - Where Buyers Lead the Way!</p>
+    </footer>
+</body>
+</html>

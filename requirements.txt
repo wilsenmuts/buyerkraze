@@ -1,0 +1,4 @@
+Django==4.1  # Specific version as requested
+django-geoip2-extras>=0.3.0  # For GeoIP auto-detection, compatible with Django 4.1
+python-dotenv>=1.0.0
+geoip2>=4.8.0
