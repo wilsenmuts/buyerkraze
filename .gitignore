@@ -32,3 +32,4 @@ env/
 *.csr
 *.conf
 local_settings.py
+upstream.py

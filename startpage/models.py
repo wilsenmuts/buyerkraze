@@ -8,6 +8,12 @@ class CountryLink(models.Model):
     def __str__(self):
         return self.country_name
 
+    class Meta:
+        verbose_name_plural = 'Country Links'
+        ordering = ['country_name']
+        db_table = 'country_links'
+
+
 class Article(models.Model):
     title = models.CharField(max_length=200)
     content = models.TextField()
@@ -18,6 +24,10 @@ class Article(models.Model):
 
     def __str__(self):
         return self.title
+
+    class Meta:
+        ordering = ['-published_date']
+        db_table = 'articles'
 
 class Event(models.Model):
     title = models.CharField(max_length=200)
@@ -33,6 +43,10 @@ class Event(models.Model):
     def __str__(self):
         return self.title
 
+    class Meta:
+        ordering = ['-event_date']
+        db_table = 'events'
+
 class EventSubscription(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='subscriptions')
     user_name = models.CharField(max_length=100)
@@ -43,3 +57,6 @@ class EventSubscription(models.Model):
 
     def __str__(self):
         return f"{self.user_name} - {self.event.title}"
+
+    class Meta:
+        db_table = 'event_subscriptions'
