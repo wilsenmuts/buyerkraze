@@ -1,35 +1,45 @@
-<!DOCTYPE html>
 {% load static %}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}BuyerKraze{% endblock %}</title>
+    <!-- SEO Meta Tags -->
+    <title>{% block title %}BuyKraze - Reverse Marketplace for Buyers and Sellers{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}BuyKraze: The ultimate reverse marketplace where buyers create offers and sellers compete to fulfill them. Join now for local and global deals!{% endblock %}">
+    <meta name="keywords" content="BuyKraze, reverse marketplace, buyer offers, seller deals, ecommerce, global shopping, online marketplace">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="BuyerKraze Team">
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="{% block og_title %}BuyKraze - Where Buyers Call the Shots{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Create offers for products you want, and let sellers compete to win your business. Discover a new way to shop with BuyKraze!{% endblock %}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{% block og_url %}https://buyerkraze.com{% url 'start' %}{% endblock %}">
+    <meta property="og:image" content="{% static 'hero/og_image.jpg' %}">
+    <meta property="og:site_name" content="BuyKraze">
+    <!-- Twitter Card Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{% block twitter_title %}BuyerKraze - Reverse Marketplace{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}Buyers post offers, sellers respond. Join BuyKraze for a revolutionary shopping experience!{% endblock %}">
+    <meta name="twitter:image" content="{% static 'hero/og_image.jpg' %}">
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{% block canonical_url %}https://buykraze.com{% url 'start' %}{% endblock %}">
+    <!-- Schema Markup (JSON-LD) -->
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "BuyerKraze",
+            "url": "https://buyerkraze.com",
+            "potentialAction": {
+                "@type": "SearchAction",
+                "target": "https://buyerkraze.com/search?q={search_term_string}",
+                "query-input": "required name=search_term_string"
+            }
+        }
+    </script>
+    <!-- Tailwind and Static JS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="{% static 'js/start.js' %}" defer></script>
-    <style>
-        body {
-            background-color: #FFFFFF; /* White */
-            color: #4169E1; /* Royal blue */
-            font-family: 'Arial', sans-serif;
-        }
-        h1, h2, h3 {
-            color:rgb(229, 177, 45); /* Deep yellow */
-        }
-        a {
-            color: #4169E1; /* Royal blue */
-        }
-        a:hover {
-            color:rgb(239, 183, 42); /* Deep yellow */
-        }
-        button, input[type="submit"] {
-            background-color: #4169E1; /* Royal blue */
-            color: #FFFFFF; /* White */
-        }
-        button:hover, input[type="submit"]:hover {
-            background-color:rgb(237, 188, 65); /* Deep yellow */
-        }
-    </style>
     <script>
         function handlePreviousSelection(selected) {
             if (confirm(`You previously selected ${selected}. Do you want to proceed with this or choose a new country?`)) {
@@ -40,26 +50,64 @@
             }
         }
     </script>
+    <style>
+        body {
+            background-color: #FFFFFF; /* White */
+            color: #4169E1; /* Royal blue */
+            font-family: 'Arial', sans-serif;
+        }
+        h1, h2, h3 {
+            color: #F5A623; /* Concentrated yellow */
+        }
+        a {
+            color: #4169E1; /* Royal blue */
+        }
+        a:hover {
+            color: #F5A623; /* Concentrated yellow */
+        }
+        button, input[type="submit"] {
+            background-color: #4169E1; /* Royal blue */
+            color: #FFFFFF; /* White */
+        }
+        button:hover, input[type="submit"]:hover {
+            background-color: #F5A623; /* Concentrated yellow */
+        }
+    </style>
 </head>
 <body class="min-h-screen flex flex-col">
     <header class="bg-blue-800 text-white py-4 shadow-md" style="background-color: #4169E1;">
-        <div class="container mx-auto px-4 flex justify-between items-center">
-            <h1 class="text-3xl font-bold" style="color: #FFFFFF;">BuyerKraze</h1>
-            <nav>
-                <ul class="flex space-x-6">
-                    <li><a href="{% url 'start' %}" class="hover:text-yellow-300" style="color: #FFFFFF;">Home</a></li>
-                    <li><a href="{% url 'article_list' %}" class="hover:text-yellow-300" style="color: #FFFFFF;">Articles</a></li>
-                    <li><a href="{% url 'event_list' %}" class="hover:text-yellow-300" style="color: #FFFFFF;">Events</a></li>
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <h1 class="text-2xl sm:text-3xl font-bold" style="color: #FFFFFF;">BuyKraze</h1>
+            <!-- Hamburger Menu Button (Visible on Mobile) -->
+            <button id="menu-toggle" class="sm:hidden focus:outline-none" aria-label="Toggle navigation menu">
+                <svg class="w-8 h-8" fill="none" stroke="#FFFFFF" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+            <!-- Navigation Menu -->
+            <nav id="nav-menu" class="hidden sm:flex sm:items-center">
+                <ul class="flex flex-col sm:flex-row sm:space-x-6 space-y-4 sm:space-y-0 p-4 sm:p-0 bg-blue-800 sm:bg-transparent" style="background-color: #4169E1;">
+                    <li><a href="{% url 'start' %}" class="hover:text-yellow-400 text-lg font-semibold" style="color: #FFFFFF;">Home</a></li>
+                    <li><a href="{% url 'article_list' %}" class="hover:text-yellow-400 text-lg font-semibold" style="color: #FFFFFF;">Articles</a></li>
+                    <li><a href="{% url 'event_list' %}" class="hover:text-yellow-400 text-lg font-semibold" style="color: #FFFFFF;">Events</a></li>
                 </ul>
             </nav>
         </div>
     </header>
-    <main class="flex-grow">
+    <main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {% block content %}
         {% endblock %}
     </main>
     <footer class="bg-blue-800 text-white py-4 text-center" style="background-color: #4169E1; color: #FFFFFF;">
-        <p>&copy; 2025 BuyerKraze - Where Buyers Lead the Way!</p>
+        <p class="text-sm sm:text-base">&copy; 2025 BuyKraze - Where Buyers Lead the Way!</p>
     </footer>
+
+    <!-- JavaScript for Hamburger Menu Toggle -->
+    <script>
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            const navMenu = document.getElementById('nav-menu');
+            navMenu.classList.toggle('hidden');
+        });
+    </script>
 </body>
 </html>

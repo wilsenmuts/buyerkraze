@@ -1,37 +1,66 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}{{ event.title }} - BuyKraze{% endblock %}
 
 {% block content %}
     <section class="py-16 bg-white" style="background-color: #FFFFFF;">
-        <div class="container mx-auto px-4 max-w-3xl">
-            <h1 class="text-4xl font-bold mb-6 text-center" style="color: #4169E1;">{{ event.title }}</h1>
-            {% if event.featured_image %}
-            <img src="{{ event.featured_image.url }}" alt="Featured Image" class="w-full h-auto mb-8 rounded-lg shadow-md" style="border: 2px solid #B8860B;">
-            {% else %}
-            <img src="https://via.placeholder.com/1200x600?text=Event+Featured+Image" alt="Featured Image Placeholder" class="w-full h-auto mb-8 rounded-lg shadow-md">
-            {% endif %}
-            <p class="text-lg leading-relaxed mb-6" style="color: #4169E1;">{{ event.description }}</p>
-            <p class="text-md mb-2" style="color: #4169E1;">Date: {{ event.event_date }}</p>
-            <p class="text-md mb-2" style="color: #4169E1;">Location: {{ event.location }} ({{ event.country_region }})</p>
-            {% if event.contact_email %}
-            <p class="text-md mb-2" style="color: #4169E1;">Contact Email: {{ event.contact_email }}</p>
-            {% endif %}
-            {% if event.contact_number %}
-            <p class="text-md mb-6" style="color: #4169E1;">Contact Number: {{ event.contact_number }}</p>
-            {% endif %}
-
-            {% if event.is_subscribable %}
-            <h2 class="text-3xl font-bold mb-4 text-center" style="color: #B8860B;">Subscribe to Join the Excitement!</h2>
-            <form method="post" class="bg-blue-50 p-8 rounded-lg shadow-md" style="background-color: #F0F8FF;">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" class="w-full py-3 px-4 rounded-md font-semibold hover:bg-blue-900" style="background-color: #4169E1; color: #FFFFFF;">Subscribe Now</button>
-            </form>
-            {% endif %}
-
-            <div class="mt-8 text-center">
-                <a href="{% url 'event_list' %}" class="text-lg hover:text-yellow-600" style="color: #4169E1;">Back to Events</a>
+        <div class="container mx-auto px-4">
+            <!-- Event Card -->
+            <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-xl overflow-hidden transform transition duration-300 hover:shadow-2xl" style="border: 2px solid #4169E1;">
+                <!-- Header with Title -->
+                <div class="bg-blue-800 text-white p-6 text-center" style="background-color: #4169E1;">
+                    <h1 class="text-4xl font-extrabold" style="color: #FFFFFF;">{{ event.title }}</h1>
+                </div>
+                <!-- Featured Image or SVG Placeholder -->
+                <div class="p-6">
+                    {% if event.featured_image %}
+                    <img src="{{ event.featured_image.url }}" alt="{{ event.title }} Featured Image" class="w-full h-64 object-cover rounded-lg mb-6" style="border: 2px solid #B8860B;">
+                    {% else %}
+                    <!-- SVG Placeholder: Event Banner -->
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400" class="w-full h-64 mb-6 rounded-lg" style="border: 2px solid #B8860B;">
+                        <defs>
+                            <linearGradient id="eventGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#4169E1;stop-opacity:0.8" />
+                                <stop offset="100%" style="stop-color:#B8860B;stop-opacity:0.8" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="100%" height="100%" fill="url(#eventGradient)" />
+                        <text x="50%" y="50%" font-size="40" font-family="Arial, sans-serif" fill="#FFFFFF" text-anchor="middle" dy=".3em">Event: {{ event.title }}</text>
+                        <circle cx="100" cy="100" r="50" fill="#FFFFFF" fill-opacity="0.3" />
+                        <circle cx="1100" cy="300" r="50" fill="#FFFFFF" fill-opacity="0.3" />
+                    </svg>
+                    {% endif %}
+                    <!-- Event Details -->
+                    <div class="text-lg leading-relaxed mb-6" style="color: #4169E1;">
+                        <p class="mb-4">{{ event.description }}</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <p><strong>Date:</strong> {{ event.event_date }}</p>
+                            <p><strong>Location:</strong> {{ event.location }} ({{ event.country_region }})</p>
+                            {% if event.contact_email %}
+                            <p><strong>Contact Email:</strong> {{ event.contact_email }}</p>
+                            {% endif %}
+                            {% if event.contact_number %}
+                            <p><strong>Contact Number:</strong> {{ event.contact_number }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <!-- Subscription Form -->
+                    {% if event.is_subscribable %}
+                    <div class="bg-blue-50 p-6 rounded-lg mt-6" style="background-color: #F0F8FF;">
+                        <h2 class="text-3xl font-bold mb-4 text-center" style="color: #B8860B;">Subscribe to Join the Excitement!</h2>
+                        <form method="post" class="space-y-4">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <button type="submit" class="w-full py-3 px-4 rounded-md font-semibold hover:bg-blue-900 transform transition duration-200 hover:scale-105" style="background-color: #4169E1; color: #FFFFFF;">Subscribe Now</button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+                <!-- Back Link -->
+                <div class="p-6 text-center">
+                    <a href="{% url 'event_list' %}" class="text-lg font-semibold hover:text-yellow-600 transition-colors duration-200" style="color: #4169E1;">Back to Events</a>
+                </div>
             </div>
         </div>
     </section>
