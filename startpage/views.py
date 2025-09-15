@@ -72,3 +72,11 @@ def event_detail(request, pk):
     else:
         form = SubscriptionForm() if event.is_subscribable else None
     return render(request, 'event_detail.html', {'event': event, 'form': form})
+
+
+def redirect_to_country(request):
+    try:
+        country = CountryLink.objects.get(country_name=request.session['selected_country'])
+        return redirect(country.url)
+    except CountryLink.DoesNotExist:
+        return redirect('start')
