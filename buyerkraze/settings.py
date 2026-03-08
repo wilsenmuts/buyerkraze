@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    'rest_framework',
     'startpage',
     #'geoip2_extras',
 ]
@@ -43,6 +44,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "startpage.middleware.SessionTrackingMiddleware",
+    "startpage.middleware.SiteMaintenanceMiddleware",
 ]
 
 ROOT_URLCONF = "buyerkraze.urls"
@@ -58,6 +61,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "startpage.context_processors.social_media_links",
             ],
         },
     },

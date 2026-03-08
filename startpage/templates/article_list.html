@@ -1,23 +1,77 @@
 {% extends 'base.html' %}
 
-{% block title %}Articles - BuyKraze{% endblock %}
+{% block title %}Articles - BuyerKraze{% endblock %}
 
 {% block content %}
-    <section class="py-16 bg-white" style="background-color: #FFFFFF;">
+    <section class="py-8">
         <div class="container mx-auto px-4">
-            <h1 class="text-4xl font-bold mb-12 text-center" style="color: #4169E1;">Inspiring Articles & Tips</h1>
-            <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="text-center mb-12">
+                <h1 class="text-5xl font-bold text-white mb-4">Inspiring Articles & Tips</h1>
+                <p class="text-xl text-white/90 max-w-2xl mx-auto">Discover insights, trends, and stories from the world of reverse marketplaces</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {% for article in articles %}
-                <li class="bg-blue-50 p-6 rounded-lg shadow-md" style="background-color: #F0F8FF; border: 1px solid #4169E1;">
-                    <a href="{% url 'article_detail' article.pk %}" class="text-2xl font-semibold hover:text-yellow-600 block mb-2" style="color: #4169E1;">{{ article.title }}</a>
-                    <p class="text-sm text-gray-600">{{ article.published_date }}</p>
-                </li>
+                <article class="glass-effect rounded-2xl overflow-hidden card-hover">
+                    {% if article.featured_image %}
+                    <div class="h-48 overflow-hidden">
+                        <img src="{{ article.featured_image.url }}" alt="{{ article.title }}" class="w-full h-full object-cover">
+                    </div>
+                    {% else %}
+                    <div class="h-48 bg-gradient-to-br from-purple-400 to-indigo-500 flex items-center justify-center">
+                        <i class="fas fa-newspaper text-white text-6xl opacity-50"></i>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="p-6">
+                        <a href="{% url 'article_detail' article.pk %}" class="block">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-3 hover:text-purple-600 transition-colors">
+                                {{ article.title }}
+                            </h2>
+                        </a>
+                        
+                        <p class="text-gray-600 mb-4 line-clamp-3">{{ article.content|truncatewords:20 }}</p>
+                        
+                        <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
+                            <span class="flex items-center gap-1">
+                                <i class="far fa-calendar"></i>
+                                {{ article.published_date|date:"M d, Y" }}
+                            </span>
+                            <span class="flex items-center gap-1">
+                                <i class="far fa-eye"></i>
+                                {{ article.view_count }} views
+                            </span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+                            <div class="flex items-center gap-4">
+                                <span class="flex items-center gap-1 text-green-600">
+                                    <i class="fas fa-thumbs-up"></i>
+                                    <span class="font-semibold">{{ article.likes }}</span>
+                                </span>
+                                <span class="flex items-center gap-1 text-red-600">
+                                    <i class="fas fa-thumbs-down"></i>
+                                    <span class="font-semibold">{{ article.dislikes }}</span>
+                                </span>
+                            </div>
+                            <a href="{% url 'article_detail' article.pk %}" class="btn-primary text-white px-4 py-2 rounded-lg font-semibold text-sm">
+                                Read More <i class="fas fa-arrow-right ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </article>
                 {% empty %}
-                <li class="col-span-full text-center text-lg" style="color: #4169E1;">No articles yet. Stay tuned for exciting updates!</li>
+                <div class="col-span-full text-center glass-effect rounded-2xl p-12">
+                    <i class="fas fa-newspaper text-purple-600 text-6xl mb-4 opacity-50"></i>
+                    <p class="text-2xl font-semibold text-gray-700">No articles yet. Stay tuned for exciting updates!</p>
+                </div>
                 {% endfor %}
-            </ul>
-            <div class="mt-8 text-center">
-                <a href="{% url 'start' %}" class="text-lg hover:text-yellow-600" style="color: #4169E1;">Back to Home</a>
+            </div>
+            
+            <div class="mt-12 text-center">
+                <a href="{% url 'start' %}" class="inline-flex items-center gap-2 btn-primary text-white px-8 py-3 rounded-lg font-semibold text-lg">
+                    <i class="fas fa-home"></i> Back to Home
+                </a>
             </div>
         </div>
     </section>

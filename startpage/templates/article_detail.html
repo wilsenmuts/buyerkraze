@@ -1,26 +1,156 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ article.title }} - BuyKraze{% endblock %}
+{% block title %}{{ article.title }} - BuyerKraze{% endblock %}
 
 {% block content %}
-    <section class="py-16 bg-white" style="background-color: #FFFFFF;">
-        <div class="container mx-auto px-4 max-w-3xl">
-            <h1 class="text-4xl font-bold mb-6 text-center" style="color: #4169E1;">{{ article.title }}</h1>
-            {% if article.top_image %}
-            <img src="{{ article.top_image.url }}" alt="Top Image" class="w-full h-auto mb-8 rounded-lg shadow-md" style="border: 2px solid #B8860B;">
-            {% else %}
-            <img src="https://via.placeholder.com/1200x400?text=Article+Top+Image" alt="Top Image Placeholder" class="w-full h-auto mb-8 rounded-lg shadow-md">
-            {% endif %}
-            <p class="text-lg leading-relaxed mb-8" style="color: #4169E1;">{{ article.content }}</p>
-            {% if article.featured_image %}
-            <img src="{{ article.featured_image.url }}" alt="Featured Image" class="w-full h-auto mb-8 rounded-lg shadow-md" style="border: 2px solid #B8860B;">
-            {% else %}
-            <img src="https://via.placeholder.com/1200x600?text=Featured+Image" alt="Featured Image Placeholder" class="w-full h-auto mb-8 rounded-lg shadow-md">
-            {% endif %}
-            <p class="text-sm text-gray-600 text-center mb-8">Published: {{ article.published_date }} | Updated: {{ article.updated_date }}</p>
-            <div class="text-center">
-                <a href="{% url 'article_list' %}" class="bg-blue-800 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-900" style="background-color: #4169E1; color: #FFFFFF;">Back to Articles</a>
+    <section class="py-8">
+        <div class="container mx-auto px-4 max-w-4xl">
+            <div class="glass-effect rounded-2xl overflow-hidden shadow-2xl">
+                <!-- Top Image -->
+                {% if article.top_image %}
+                <div class="w-full h-96 overflow-hidden">
+                    <img src="{{ article.top_image.url }}" alt="{{ article.title }}" class="w-full h-full object-cover">
+                </div>
+                {% else %}
+                <div class="w-full h-96 bg-gradient-to-br from-purple-400 to-indigo-500 flex items-center justify-center">
+                    <i class="fas fa-newspaper text-white text-9xl opacity-30"></i>
+                </div>
+                {% endif %}
+                
+                <div class="p-8 md:p-12">
+                    <!-- Article Header -->
+                    <div class="mb-8">
+                        <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">{{ article.title }}</h1>
+                        
+                        <div class="flex flex-wrap items-center gap-4 text-gray-600 mb-6">
+                            <span class="flex items-center gap-2">
+                                <i class="far fa-calendar"></i>
+                                <span>{{ article.published_date|date:"F d, Y" }}</span>
+                            </span>
+                            <span class="flex items-center gap-2">
+                                <i class="far fa-clock"></i>
+                                <span>Updated: {{ article.updated_date|date:"M d, Y" }}</span>
+                            </span>
+                            <span class="flex items-center gap-2">
+                                <i class="far fa-eye"></i>
+                                <span class="font-semibold text-purple-600">{{ article.view_count }} views</span>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <!-- Article Content -->
+                    <div class="prose prose-lg max-w-none mb-8">
+                        <p class="text-lg leading-relaxed text-gray-700 whitespace-pre-line">{{ article.content }}</p>
+                    </div>
+                    
+                    <!-- Featured Image -->
+                    {% if article.featured_image %}
+                    <div class="my-8 rounded-xl overflow-hidden shadow-lg">
+                        <img src="{{ article.featured_image.url }}" alt="Featured Image" class="w-full h-auto">
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Like/Dislike Section -->
+                    <div class="border-t border-gray-200 pt-8 mt-8">
+                        <div class="flex items-center justify-between flex-wrap gap-4">
+                            <div class="text-lg font-semibold text-gray-700">
+                                Did you find this article helpful?
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <button onclick="handleLike({{ article.pk }})" class="like-btn flex items-center gap-2 bg-green-100 hover:bg-green-200 text-green-700 px-6 py-3 rounded-lg font-semibold cursor-pointer">
+                                    <i class="fas fa-thumbs-up text-xl"></i>
+                                    <span id="like-count-{{ article.pk }}" class="text-lg">{{ article.likes }}</span>
+                                </button>
+                                <button onclick="handleDislike({{ article.pk }})" class="dislike-btn flex items-center gap-2 bg-red-100 hover:bg-red-200 text-red-700 px-6 py-3 rounded-lg font-semibold cursor-pointer">
+                                    <i class="fas fa-thumbs-down text-xl"></i>
+                                    <span id="dislike-count-{{ article.pk }}" class="text-lg">{{ article.dislikes }}</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="feedback-message" class="mt-4 hidden"></div>
+                    </div>
+                    
+                    <!-- Back Button -->
+                    <div class="text-center mt-12">
+                        <a href="{% url 'article_list' %}" class="inline-flex items-center gap-2 btn-primary text-white px-8 py-3 rounded-lg font-semibold text-lg">
+                            <i class="fas fa-arrow-left"></i> Back to Articles
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
+    
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+        function showFeedback(message, type) {
+            const feedbackEl = document.getElementById('feedback-message');
+            feedbackEl.className = `mt-4 p-4 rounded-lg ${type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`;
+            feedbackEl.textContent = message;
+            feedbackEl.classList.remove('hidden');
+            setTimeout(() => {
+                feedbackEl.classList.add('hidden');
+            }, 3000);
+        }
+        
+        async function handleLike(articleId) {
+            const csrftoken = getCookie('csrftoken');
+            try {
+                const response = await fetch(`/api/articles/${articleId}/like/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrftoken,
+                        'Content-Type': 'application/json',
+                    },
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    document.getElementById(`like-count-${articleId}`).textContent = data.likes;
+                    document.getElementById(`dislike-count-${articleId}`).textContent = data.dislikes;
+                    showFeedback('Thank you for your feedback!', 'success');
+                } else {
+                    showFeedback(data.error || 'You have already liked this article', 'error');
+                }
+            } catch (error) {
+                showFeedback('An error occurred. Please try again.', 'error');
+            }
+        }
+        
+        async function handleDislike(articleId) {
+            const csrftoken = getCookie('csrftoken');
+            try {
+                const response = await fetch(`/api/articles/${articleId}/dislike/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrftoken,
+                        'Content-Type': 'application/json',
+                    },
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    document.getElementById(`like-count-${articleId}`).textContent = data.likes;
+                    document.getElementById(`dislike-count-${articleId}`).textContent = data.dislikes;
+                    showFeedback('Thank you for your feedback!', 'success');
+                } else {
+                    showFeedback(data.error || 'You have already disliked this article', 'error');
+                }
+            } catch (error) {
+                showFeedback('An error occurred. Please try again.', 'error');
+            }
+        }
+    </script>
 {% endblock %}

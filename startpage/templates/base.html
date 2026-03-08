@@ -4,102 +4,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{% static 'images/icon/favicon.ico' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/icon/favicon-16x16.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/icon/favicon-32x32.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/icon/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{% static 'images/icon/android-chrome-192x192.png' %}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{% static 'images/icon/android-chrome-512x512.png' %}">
+    <link rel="manifest" href="{% static 'images/icon/site.webmanifest' %}">
+    
     <!-- SEO Meta Tags -->
-    <title>{% block title %}BuyKraze - Reverse Marketplace for Buyers and Sellers{% endblock %}</title>
-    <meta name="description" content="{% block meta_description %}BuyKraze: The ultimate reverse marketplace where buyers create offers and sellers compete to fulfill them. Join now for local and global deals!{% endblock %}">
-    <meta name="keywords" content="BuyKraze, reverse marketplace, buyer offers, seller deals, ecommerce, global shopping, online marketplace">
+    <title>{% block title %}BuyerKraze - Reverse Marketplace for Buyers and Sellers{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}BuyerKraze: The ultimate reverse marketplace where buyers create offers and sellers compete to fulfill them. Join now for local and global deals!{% endblock %}">
+    <meta name="keywords" content="BuyerKraze, reverse marketplace, buyer offers, seller deals, ecommerce, global shopping, online marketplace">
     <meta name="robots" content="index, follow">
     <meta name="author" content="BuyerKraze Team">
     <!-- Open Graph Tags -->
-    <meta property="og:title" content="{% block og_title %}BuyKraze - Where Buyers Call the Shots{% endblock %}">
-    <meta property="og:description" content="{% block og_description %}Create offers for products you want, and let sellers compete to win your business. Discover a new way to shop with BuyKraze!{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}BuyerKraze - Where Buyers Call the Shots{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Create offers for products you want, and let sellers compete to win your business. Discover a new way to shop with BuyerKraze!{% endblock %}">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{% block og_url %}https://buyerkraze.com{% url 'start' %}{% endblock %}">
     <meta property="og:image" content="{% static 'hero/og_image.jpg' %}">
-    <meta property="og:site_name" content="BuyKraze">
+    <meta property="og:site_name" content="BuyerKraze">
     <!-- Twitter Card Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{% block twitter_title %}BuyerKraze - Reverse Marketplace{% endblock %}">
-    <meta name="twitter:description" content="{% block twitter_description %}Buyers post offers, sellers respond. Join BuyKraze for a revolutionary shopping experience!{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}Buyers post offers, sellers respond. Join BuyerKraze for a revolutionary shopping experience!{% endblock %}">
     <meta name="twitter:image" content="{% static 'hero/og_image.jpg' %}">
     <!-- Canonical URL -->
-    <link rel="canonical" href="{% block canonical_url %}https://buykraze.com{% url 'start' %}{% endblock %}">
-    <!-- Schema Markup (JSON-LD) -->
-    <script type="application/ld+json">
-        {
-            "@context": "https://schema.org",
-            "@type": "WebSite",
-            "name": "BuyerKraze",
-            "url": "https://buyerkraze.com",
-            "potentialAction": {
-                "@type": "SearchAction",
-                "target": "https://buyerkraze.com/search?q={search_term_string}",
-                "query-input": "required name=search_term_string"
-            }
-        }
-    </script>
-    <!-- Tailwind and Static JS -->
+    <link rel="canonical" href="{% block canonical_url %}https://buyerkraze.com{% url 'start' %}{% endblock %}">
+    <!-- Tailwind and Google Fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        function handlePreviousSelection(selected) {
-            if (confirm(`You previously selected ${selected}. Do you want to proceed with this or choose a new country?`)) {
-                // Proceed with previous
-                window.location.href = `/redirect?country=${selected}`;  // Adjust if needed; for simplicity, form handles
-            } else {
-                // Choose new; form is already there
-            }
-        }
-    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
         body {
-            background-color: #FFFFFF; /* White */
-            color: #4169E1; /* Royal blue */
-            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
         }
-        h1, h2, h3 {
-            color: #F5A623; /* Concentrated yellow */
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
-        a {
-            color: #4169E1; /* Royal blue */
+        .card-hover {
+            transition: all 0.3s ease;
         }
-        a:hover {
-            color: #F5A623; /* Concentrated yellow */
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
         }
-        button, input[type="submit"] {
-            background-color: #4169E1; /* Royal blue */
-            color: #FFFFFF; /* White */
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
         }
-        button:hover, input[type="submit"]:hover {
-            background-color: #F5A623; /* Concentrated yellow */
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        .like-btn, .dislike-btn {
+            transition: all 0.2s ease;
+        }
+        .like-btn:hover {
+            color: #10b981;
+            transform: scale(1.1);
+        }
+        .dislike-btn:hover {
+            color: #ef4444;
+            transform: scale(1.1);
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        /* Remove all default margins */
+        .no-margin-container {
+            margin: 0 !important;
+            padding: 0 !important;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
-    <header class="bg-blue-800 text-white py-4 shadow-md" style="background-color: #4169E1;">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-            <h1 class="text-2xl sm:text-3xl font-bold" style="color: #FFFFFF;">BuyKraze</h1>
-            <!-- Hamburger Menu Button (Visible on Mobile) -->
-            <button id="menu-toggle" class="sm:hidden focus:outline-none" aria-label="Toggle navigation menu">
-                <svg class="w-8 h-8" fill="none" stroke="#FFFFFF" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                </svg>
-            </button>
-            <!-- Navigation Menu -->
-            <nav id="nav-menu" class="hidden sm:flex sm:items-center">
-                <ul class="flex flex-col sm:flex-row sm:space-x-6 space-y-4 sm:space-y-0 p-4 sm:p-0 bg-blue-800 sm:bg-transparent" style="background-color: #4169E1;">
-                    <li><a href="{% url 'start' %}" class="hover:text-yellow-400 text-lg font-semibold" style="color: #FFFFFF;">Home</a></li>
-                    <li><a href="{% url 'article_list' %}" class="hover:text-yellow-400 text-lg font-semibold" style="color: #FFFFFF;">Articles</a></li>
-                    <li><a href="{% url 'event_list' %}" class="hover:text-yellow-400 text-lg font-semibold" style="color: #FFFFFF;">Events</a></li>
-                </ul>
-            </nav>
+<body class="min-h-screen flex flex-col no-margin-container">
+    <header class="glass-effect shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-2">
+                    <img src="{% static 'images/icon/favicon-32x32.png' %}" alt="BuyerKraze Logo" class="w-10 h-10">
+                    <h1 class="text-2xl sm:text-3xl font-bold gradient-text">BuyerKraze</h1>
+                </div>
+                
+                <!-- Hamburger Menu Button (Visible on Mobile) -->
+                <button id="menu-toggle" class="sm:hidden focus:outline-none" aria-label="Toggle navigation menu">
+                    <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+                
+                <!-- Navigation Menu -->
+                <nav id="nav-menu" class="hidden sm:flex sm:items-center">
+                    <ul class="flex flex-col sm:flex-row sm:space-x-8 space-y-4 sm:space-y-0 p-4 sm:p-0">
+                        <li><a href="{% url 'start' %}" class="text-gray-700 hover:text-purple-600 text-lg font-semibold transition-colors flex items-center gap-2">
+                            <i class="fas fa-home"></i> Home
+                        </a></li>
+                        <li><a href="{% url 'article_list' %}" class="text-gray-700 hover:text-purple-600 text-lg font-semibold transition-colors flex items-center gap-2">
+                            <i class="fas fa-newspaper"></i> Articles
+                        </a></li>
+                        <li><a href="{% url 'event_list' %}" class="text-gray-700 hover:text-purple-600 text-lg font-semibold transition-colors flex items-center gap-2">
+                            <i class="fas fa-calendar"></i> Events
+                        </a></li>
+                    </ul>
+                </nav>
+            </div>
         </div>
     </header>
-    <main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <main class="flex-grow no-margin-container">
         {% block content %}
         {% endblock %}
     </main>
-    <footer class="bg-blue-800 text-white py-4 text-center" style="background-color: #4169E1; color: #FFFFFF;">
-        <p class="text-sm sm:text-base">&copy; 2025 BuyKraze - Where Buyers Lead the Way!</p>
+    
+    <footer class="glass-effect text-gray-800 py-8 mt-12">
+        <div class="container mx-auto px-4 text-center">
+            <div class="flex justify-center space-x-6 mb-4">
+                {% if social_media.facebook %}
+                <a href="{{ social_media.facebook }}" target="_blank" rel="noopener noreferrer" class="text-purple-600 hover:text-purple-800 transition-colors" aria-label="Facebook">
+                    <i class="fab fa-facebook fa-2x"></i>
+                </a>
+                {% endif %}
+                {% if social_media.twitter %}
+                <a href="{{ social_media.twitter }}" target="_blank" rel="noopener noreferrer" class="text-purple-600 hover:text-purple-800 transition-colors" aria-label="Twitter">
+                    <i class="fab fa-twitter fa-2x"></i>
+                </a>
+                {% endif %}
+                {% if social_media.instagram %}
+                <a href="{{ social_media.instagram }}" target="_blank" rel="noopener noreferrer" class="text-purple-600 hover:text-purple-800 transition-colors" aria-label="Instagram">
+                    <i class="fab fa-instagram fa-2x"></i>
+                </a>
+                {% endif %}
+                {% if social_media.linkedin %}
+                <a href="{{ social_media.linkedin }}" target="_blank" rel="noopener noreferrer" class="text-purple-600 hover:text-purple-800 transition-colors" aria-label="LinkedIn">
+                    <i class="fab fa-linkedin fa-2x"></i>
+                </a>
+                {% endif %}
+            </div>
+            <p class="text-sm sm:text-base font-medium">&copy; 2026 BuyerKraze - Where Buyers Lead the Way!</p>
+            <p class="text-xs mt-2 text-gray-600">Empowering buyers worldwide with innovative marketplace solutions</p>
+        </div>
     </footer>
 
     <!-- JavaScript for Hamburger Menu Toggle -->
