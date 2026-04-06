@@ -4,7 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{% static 'images/icon/favicon.ico' %}">
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/icon/favicon-16x16.png' %}">
@@ -13,127 +12,319 @@
     <link rel="icon" type="image/png" sizes="192x192" href="{% static 'images/icon/android-chrome-192x192.png' %}">
     <link rel="icon" type="image/png" sizes="512x512" href="{% static 'images/icon/android-chrome-512x512.png' %}">
     <link rel="manifest" href="{% static 'images/icon/site.webmanifest' %}">
-    
-    <!-- SEO Meta Tags -->
+    <!-- SEO -->
     <title>{% block title %}BuyerKraze - Reverse Marketplace for Buyers and Sellers{% endblock %}</title>
     <meta name="description" content="{% block meta_description %}BuyerKraze: The ultimate reverse marketplace where buyers create offers and sellers compete to fulfill them. Join now for local and global deals!{% endblock %}">
     <meta name="keywords" content="BuyerKraze, reverse marketplace, buyer offers, seller deals, ecommerce, global shopping, online marketplace">
     <meta name="robots" content="index, follow">
     <meta name="author" content="BuyerKraze Team">
-    <!-- Open Graph Tags -->
     <meta property="og:title" content="{% block og_title %}BuyerKraze - Where Buyers Call the Shots{% endblock %}">
     <meta property="og:description" content="{% block og_description %}Create offers for products you want, and let sellers compete to win your business. Discover a new way to shop with BuyerKraze!{% endblock %}">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{% block og_url %}https://buyerkraze.com{% url 'start' %}{% endblock %}">
     <meta property="og:image" content="{% static 'hero/og_image.jpg' %}">
     <meta property="og:site_name" content="BuyerKraze">
-    <!-- Twitter Card Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{% block twitter_title %}BuyerKraze - Reverse Marketplace{% endblock %}">
     <meta name="twitter:description" content="{% block twitter_description %}Buyers post offers, sellers respond. Join BuyerKraze for a revolutionary shopping experience!{% endblock %}">
     <meta name="twitter:image" content="{% static 'hero/og_image.jpg' %}">
-    <!-- Canonical URL -->
     <link rel="canonical" href="{% block canonical_url %}https://buyerkraze.com{% url 'start' %}{% endblock %}">
-    <!-- Tailwind and Google Fonts -->
+    <!-- Tailwind + Fonts + Icons -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        * {
-            font-family: 'Inter', sans-serif;
-        }
+        * { font-family: 'Inter', sans-serif; }
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
         }
+
+        /* Navbar */
+        #main-navbar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 9999;
+            padding: 1.25rem 0;
+            background: transparent;
+            transition: background 0.35s ease, box-shadow 0.35s ease, padding 0.35s ease;
+        }
+        #main-navbar.scrolled {
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            box-shadow: 0 2px 24px rgba(102,126,234,0.13);
+            padding: 0.6rem 0;
+        }
+
+        /* Logo text colour swap on scroll */
+        .logo-text {
+            background: linear-gradient(135deg, #fff 0%, #ddd6fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            transition: background 0.35s;
+        }
+        #main-navbar.scrolled .logo-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Desktop nav links */
+        .nav-link {
+            position: relative;
+            color: rgba(255,255,255,0.88);
+            font-weight: 500;
+            font-size: 0.9375rem;
+            letter-spacing: 0.015em;
+            padding: 0.35rem 0;
+            transition: color 0.2s;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -3px; left: 0;
+            width: 0; height: 2px;
+            border-radius: 2px;
+            background: linear-gradient(90deg, #667eea, #a78bfa);
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after, .nav-link.active::after { width: 100%; }
+        #main-navbar.scrolled .nav-link { color: #374151; }
+        #main-navbar.scrolled .nav-link:hover,
+        #main-navbar.scrolled .nav-link.active { color: #667eea; }
+
+        /* CTA pill */
+        .nav-cta {
+            display: inline-flex; align-items: center; gap: 0.375rem;
+            font-weight: 600; font-size: 0.875rem;
+            padding: 0.5rem 1.25rem;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.15);
+            border: 1.5px solid rgba(255,255,255,0.55);
+            color: #fff;
+            backdrop-filter: blur(4px);
+            white-space: nowrap;
+            transition: background 0.25s, transform 0.2s, box-shadow 0.2s, border-color 0.35s;
+        }
+        .nav-cta:hover {
+            background: rgba(255,255,255,0.28);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+        }
+        #main-navbar.scrolled .nav-cta {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-color: transparent;
+        }
+        #main-navbar.scrolled .nav-cta:hover {
+            box-shadow: 0 8px 20px rgba(102,126,234,0.45);
+        }
+
+        /* Animated hamburger lines */
+        .h-line {
+            display: block; width: 22px; height: 2px;
+            border-radius: 2px; background: #fff;
+            transition: background 0.35s, transform 0.3s, opacity 0.3s, width 0.3s;
+        }
+        #main-navbar.scrolled .h-line { background: #667eea; }
+        #menu-toggle.is-open .h-line:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+        #menu-toggle.is-open .h-line:nth-child(2) { opacity: 0; width: 0; }
+        #menu-toggle.is-open .h-line:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+        /* Mobile slide-in drawer */
+        #mobile-drawer {
+            position: fixed;
+            top: 0; right: 0;
+            width: min(300px, 82vw);
+            height: 100dvh;
+            background: rgba(12,6,30,0.97);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            transform: translateX(110%);
+            transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+            z-index: 9998;
+            display: flex; flex-direction: column;
+            padding: 4.5rem 1.75rem 2rem;
+        }
+        #mobile-drawer.is-open { transform: translateX(0); }
+
+        #drawer-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.52);
+            z-index: 9997;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.4s;
+        }
+        #drawer-overlay.is-open { opacity: 1; pointer-events: all; }
+
+        .drawer-link {
+            display: flex; align-items: center; gap: 0.875rem;
+            color: rgba(255,255,255,0.68);
+            font-size: 1.0625rem; font-weight: 500;
+            padding: 0.875rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+            transition: color 0.2s, padding-left 0.25s;
+        }
+        .drawer-link:hover, .drawer-link.active { color: #fff; padding-left: 0.375rem; }
+        .drawer-icon {
+            width: 2rem; height: 2rem;
+            background: rgba(255,255,255,0.07);
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.8125rem; flex-shrink: 0;
+            transition: background 0.2s;
+        }
+        .drawer-link:hover .drawer-icon,
+        .drawer-link.active .drawer-icon {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        /* Shared app styles */
         .gradient-text {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        .card-hover {
-            transition: all 0.3s ease;
-        }
-        .card-hover:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            transition: all 0.3s ease;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
-        }
-        .like-btn, .dislike-btn {
-            transition: all 0.2s ease;
-        }
-        .like-btn:hover {
-            color: #10b981;
-            transform: scale(1.1);
-        }
-        .dislike-btn:hover {
-            color: #ef4444;
-            transform: scale(1.1);
-        }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); transition: all 0.3s ease; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(102,126,234,0.4); }
+        .like-btn, .dislike-btn { transition: all 0.2s ease; }
+        .like-btn:hover { color: #10b981; transform: scale(1.1); }
+        .dislike-btn:hover { color: #ef4444; transform: scale(1.1); }
         .glass-effect {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255,255,255,0.95);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255,255,255,0.2);
         }
-        /* Remove all default margins */
-        .no-margin-container {
-            margin: 0 !important;
-            padding: 0 !important;
-        }
+        .no-margin-container { margin: 0 !important; padding: 0 !important; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col no-margin-container">
-    <header class="glass-effect shadow-lg sticky top-0 z-50">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-4">
-                <div class="flex items-center space-x-2">
-                    <img src="{% static 'images/icon/favicon-32x32.png' %}" alt="BuyerKraze Logo" class="w-10 h-10">
-                    <h1 class="text-2xl sm:text-3xl font-bold gradient-text">BuyerKraze</h1>
-                </div>
-                
-                <!-- Hamburger Menu Button (Visible on Mobile) -->
-                <button id="menu-toggle" class="sm:hidden focus:outline-none" aria-label="Toggle navigation menu">
-                    <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                </button>
-                
-                <!-- Navigation Menu -->
-                <nav id="nav-menu" class="hidden sm:flex sm:items-center">
-                    <ul class="flex flex-col sm:flex-row sm:space-x-8 space-y-4 sm:space-y-0 p-4 sm:p-0">
-                        <li><a href="{% url 'start' %}" class="text-gray-700 hover:text-purple-600 text-lg font-semibold transition-colors flex items-center gap-2">
-                            <i class="fas fa-home"></i> Home
-                        </a></li>
-                        <li><a href="{% url 'article_list' %}" class="text-gray-700 hover:text-purple-600 text-lg font-semibold transition-colors flex items-center gap-2">
-                            <i class="fas fa-newspaper"></i> Articles
-                        </a></li>
-                        <li><a href="{% url 'event_list' %}" class="text-gray-700 hover:text-purple-600 text-lg font-semibold transition-colors flex items-center gap-2">
-                            <i class="fas fa-calendar"></i> Events
-                        </a></li>
-                    </ul>
+
+    <!-- NAVBAR -->
+    <header id="main-navbar">
+        <div class="max-w-7xl mx-auto px-5 sm:px-8">
+            <div class="flex items-center justify-between">
+
+                <!-- Logo -->
+                <a href="{% url 'start' %}" class="flex items-center gap-2.5 group flex-shrink-0">
+                    <div class="relative">
+                        <img src="{% static 'images/icon/android-chrome-192x192.png' %}"
+                             alt="BuyerKraze"
+                             class="w-9 h-9 rounded-xl object-cover shadow-md group-hover:scale-110 transition-transform duration-300">
+                        <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-white/80"></span>
+                    </div>
+                    <span class="logo-text text-xl font-bold tracking-tight select-none">BuyerKraze</span>
+                </a>
+
+                <!-- Desktop centre links -->
+                <nav class="hidden md:flex items-center gap-9">
+                    <a href="{% url 'start' %}" class="nav-link {% if request.resolver_match.url_name == 'start' %}active{% endif %}">Home</a>
+                    <a href="{% url 'article_list' %}" class="nav-link {% if 'article' in request.resolver_match.url_name %}active{% endif %}">Articles</a>
+                    <a href="{% url 'event_list' %}" class="nav-link {% if 'event' in request.resolver_match.url_name %}active{% endif %}">Events</a>
+                    {% if request.user.is_superuser %}
+                    <a href="{% url 'admin_dashboard' %}" class="nav-link flex items-center gap-1.5" style="color:#fde68a;">
+                        <i class="fas fa-shield-halved text-xs"></i> Dashboard
+                    </a>
+                    {% endif %}
                 </nav>
+
+                <!-- Desktop right CTA -->
+                <div class="hidden md:block">
+                    <a href="#select-country" class="nav-cta">
+                        Get Started <i class="fas fa-arrow-right text-xs"></i>
+                    </a>
+                </div>
+
+                <!-- Hamburger (mobile only) -->
+                <button id="menu-toggle"
+                        class="md:hidden flex flex-col justify-center gap-[6px] p-2 rounded-lg focus:outline-none"
+                        aria-label="Open menu" aria-expanded="false">
+                    <span class="h-line"></span>
+                    <span class="h-line"></span>
+                    <span class="h-line"></span>
+                </button>
             </div>
         </div>
     </header>
-    
+
+    <!-- MOBILE DRAWER -->
+    <div id="drawer-overlay"></div>
+    <aside id="mobile-drawer" aria-hidden="true">
+
+        <!-- Drawer top bar -->
+        <div class="absolute top-0 left-0 right-0 px-5 py-4 flex items-center justify-between border-b border-white/10">
+            <div class="flex items-center gap-2.5">
+                <img src="{% static 'images/icon/android-chrome-192x192.png' %}" alt="BuyerKraze" class="w-8 h-8 rounded-lg">
+                <span class="text-white font-bold text-base tracking-tight">BuyerKraze</span>
+            </div>
+            <button id="drawer-close" aria-label="Close menu" class="text-white/50 hover:text-white transition-colors p-1">
+                <i class="fas fa-xmark text-lg"></i>
+            </button>
+        </div>
+
+        <!-- Drawer nav links -->
+        <nav class="flex-1 flex flex-col mt-2">
+            <a href="{% url 'start' %}" class="drawer-link {% if request.resolver_match.url_name == 'start' %}active{% endif %}">
+                <span class="drawer-icon"><i class="fas fa-house"></i></span> Home
+            </a>
+            <a href="{% url 'article_list' %}" class="drawer-link {% if 'article' in request.resolver_match.url_name %}active{% endif %}">
+                <span class="drawer-icon"><i class="fas fa-newspaper"></i></span> Articles
+            </a>
+            <a href="{% url 'event_list' %}" class="drawer-link {% if 'event' in request.resolver_match.url_name %}active{% endif %}">
+                <span class="drawer-icon"><i class="fas fa-calendar-days"></i></span> Events
+            </a>
+            {% if request.user.is_superuser %}
+            <a href="{% url 'admin_dashboard' %}" class="drawer-link">
+                <span class="drawer-icon"><i class="fas fa-shield-halved"></i></span> Dashboard
+            </a>
+            {% endif %}
+        </nav>
+
+        <!-- Drawer footer: CTA + socials -->
+        <div class="pt-6 border-t border-white/10 space-y-5">
+            <a href="#select-country" class="block w-full text-center font-semibold text-white py-3 rounded-xl btn-primary">
+                Get Started <i class="fas fa-arrow-right ml-1 text-xs"></i>
+            </a>
+            <div class="flex justify-center gap-6">
+                {% if social_media.facebook %}
+                <a href="{{ social_media.facebook }}" target="_blank" rel="noopener noreferrer" class="text-white/40 hover:text-white transition-colors" aria-label="Facebook">
+                    <i class="fab fa-facebook text-lg"></i>
+                </a>
+                {% endif %}
+                {% if social_media.twitter %}
+                <a href="{{ social_media.twitter }}" target="_blank" rel="noopener noreferrer" class="text-white/40 hover:text-white transition-colors" aria-label="Twitter">
+                    <i class="fab fa-twitter text-lg"></i>
+                </a>
+                {% endif %}
+                {% if social_media.instagram %}
+                <a href="{{ social_media.instagram }}" target="_blank" rel="noopener noreferrer" class="text-white/40 hover:text-white transition-colors" aria-label="Instagram">
+                    <i class="fab fa-instagram text-lg"></i>
+                </a>
+                {% endif %}
+                {% if social_media.linkedin %}
+                <a href="{{ social_media.linkedin }}" target="_blank" rel="noopener noreferrer" class="text-white/40 hover:text-white transition-colors" aria-label="LinkedIn">
+                    <i class="fab fa-linkedin text-lg"></i>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
     <main class="flex-grow no-margin-container">
-        {% block content %}
-        {% endblock %}
+        {% block content %}{% endblock %}
     </main>
-    
-    <footer class="glass-effect text-gray-800 py-8 mt-12">
+
+    <!-- FOOTER -->
+    <footer class="glass-effect text-gray-800 py-8">
         <div class="container mx-auto px-4 text-center">
             <div class="flex justify-center space-x-6 mb-4">
                 {% if social_media.facebook %}
@@ -162,12 +353,45 @@
         </div>
     </footer>
 
-    <!-- JavaScript for Hamburger Menu Toggle -->
+    <!-- SCRIPTS -->
     <script>
-        document.getElementById('menu-toggle').addEventListener('click', function() {
-            const navMenu = document.getElementById('nav-menu');
-            navMenu.classList.toggle('hidden');
-        });
+        const navbar      = document.getElementById('main-navbar');
+        const toggle      = document.getElementById('menu-toggle');
+        const drawer      = document.getElementById('mobile-drawer');
+        const overlay     = document.getElementById('drawer-overlay');
+        const drawerClose = document.getElementById('drawer-close');
+
+        // Scroll-aware navbar
+        function onScroll() {
+            navbar.classList.toggle('scrolled', window.scrollY > 40);
+        }
+        window.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
+
+        function openDrawer() {
+            drawer.classList.add('is-open');
+            overlay.classList.add('is-open');
+            toggle.classList.add('is-open');
+            toggle.setAttribute('aria-expanded', 'true');
+            drawer.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeDrawer() {
+            drawer.classList.remove('is-open');
+            overlay.classList.remove('is-open');
+            toggle.classList.remove('is-open');
+            toggle.setAttribute('aria-expanded', 'false');
+            drawer.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+        }
+
+        toggle.addEventListener('click', () =>
+            drawer.classList.contains('is-open') ? closeDrawer() : openDrawer()
+        );
+        overlay.addEventListener('click', closeDrawer);
+        drawerClose.addEventListener('click', closeDrawer);
+        drawer.querySelectorAll('a').forEach(l => l.addEventListener('click', closeDrawer));
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
     </script>
 </body>
 </html>

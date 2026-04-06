@@ -2,172 +2,194 @@
 {% load static %}
 
 {% block title %}{{ event.title }} - BuyerKraze{% endblock %}
+{% block meta_description %}{{ event.description|truncatewords:30 }}{% endblock %}
+{% block og_title %}{{ event.title }}{% endblock %}
+{% block og_description %}{{ event.description|truncatewords:25 }}{% endblock %}
 
 {% block content %}
-    <section class="py-8">
-        <div class="container mx-auto px-4 max-w-4xl">
-            <div class="glass-effect rounded-2xl overflow-hidden shadow-2xl">
-                <!-- Event Status Badge -->
+    <section class="pt-20 pb-16 min-h-screen bg-gradient-to-b from-[#667eea]/10 to-transparent">
+        <div class="max-w-5xl mx-auto px-5 sm:px-8">
+
+            <!-- Back Button -->
+            <div class="mb-8">
+                <a href="{% url 'event_list' %}"
+                   class="inline-flex items-center gap-2 text-white/70 hover:text-white transition-colors font-medium">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back to All Events</span>
+                </a>
+            </div>
+
+            <div class="glass-effect rounded-3xl overflow-hidden shadow-2xl">
+
+                <!-- Status Banner -->
                 {% if event_has_passed %}
-                <div class="bg-red-500 text-white text-center py-3 px-4">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <span class="font-semibold ml-2">This event has already passed</span>
+                <div class="bg-red-500/90 backdrop-blur-sm text-white text-center py-4 flex items-center justify-center gap-3 font-medium">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>This event has already passed</span>
                 </div>
                 {% else %}
-                <div class="bg-green-500 text-white text-center py-3 px-4">
-                    <i class="fas fa-check-circle"></i>
-                    <span class="font-semibold ml-2">Upcoming Event - Register Now!</span>
+                <div class="bg-emerald-500/90 backdrop-blur-sm text-white text-center py-4 flex items-center justify-center gap-3 font-medium">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Upcoming Event — Register Now!</span>
                 </div>
                 {% endif %}
-                
+
                 <!-- Featured Image -->
-                {% if event.featured_image %}
-                <div class="w-full h-96 overflow-hidden">
-                    <img src="{{ event.featured_image.url }}" alt="{{ event.title }}" class="w-full h-full object-cover">
+                <div class="relative h-[420px] overflow-hidden">
+                    {% if event.featured_image %}
+                        <img src="{{ event.featured_image.url }}"
+                             alt="{{ event.title }}"
+                             class="w-full h-full object-cover">
+                    {% else %}
+                        <div class="w-full h-full bg-gradient-to-br from-violet-500 via-purple-600 to-indigo-600 flex items-center justify-center">
+                            <i class="fas fa-calendar-alt text-white text-[180px] opacity-20"></i>
+                        </div>
+                    {% endif %}
+
+                    <!-- Floating Date Badge -->
+                    <div class="absolute top-6 right-6 bg-white rounded-2xl shadow-xl px-6 py-4 text-center min-w-[90px]">
+                        <span class="block text-xs font-semibold tracking-widest text-purple-600">
+                            {{ event.event_date|date:"M" }}
+                        </span>
+                        <span class="block text-4xl font-bold text-gray-800 leading-none">
+                            {{ event.event_date|date:"d" }}
+                        </span>
+                        <span class="block text-sm text-gray-500 mt-1">
+                            {{ event.event_date|date:"Y" }}
+                        </span>
+                    </div>
                 </div>
-                {% else %}
-                <div class="w-full h-96 bg-gradient-to-br from-purple-400 to-indigo-500 flex items-center justify-center">
-                    <i class="fas fa-calendar-alt text-white text-9xl opacity-30"></i>
-                </div>
-                {% endif %}
-                
-                <div class="p-8 md:p-12">
-                    <!-- Event Header -->
-                    <div class="mb-8">
-                        <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">{{ event.title }}</h1>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-600">
-                            <div class="flex items-center gap-3">
-                                <i class="far fa-calendar text-purple-600 text-xl"></i>
-                                <div>
-                                    <div class="text-sm text-gray-500">Date & Time</div>
-                                    <div class="font-semibold">{{ event.event_date|date:"F d, Y - g:i A" }}</div>
-                                </div>
+
+                <div class="p-8 md:p-12 lg:p-16">
+
+                    <!-- Title & Meta -->
+                    <h1 class="text-4xl md:text-5xl font-bold text-gray-900 leading-tight mb-8">
+                        {{ event.title }}
+                    </h1>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-8 mb-12 text-gray-700">
+                        <div class="flex gap-4">
+                            <div class="w-11 h-11 flex-shrink-0 bg-purple-100 rounded-2xl flex items-center justify-center text-purple-600">
+                                <i class="far fa-clock text-2xl"></i>
                             </div>
-                            {% if event.location %}
-                            <div class="flex items-center gap-3">
-                                <i class="fas fa-map-marker-alt text-purple-600 text-xl"></i>
-                                <div>
-                                    <div class="text-sm text-gray-500">Location</div>
-                                    <div class="font-semibold">{{ event.location }}</div>
-                                </div>
+                            <div>
+                                <div class="text-xs uppercase tracking-widest text-gray-500 font-medium">Date & Time</div>
+                                <div class="font-semibold mt-1">{{ event.event_date|date:"l, F d, Y" }}</div>
+                                <div class="text-purple-600 font-medium">{{ event.event_date|date:"g:i A" }}</div>
                             </div>
-                            {% endif %}
-                            <div class="flex items-center gap-3">
-                                <i class="fas fa-globe text-purple-600 text-xl"></i>
-                                <div>
-                                    <div class="text-sm text-gray-500">Region</div>
-                                    <div class="font-semibold">{{ event.country_region }}</div>
-                                </div>
-                            </div>
-                            {% if event.contact_email %}
-                            <div class="flex items-center gap-3">
-                                <i class="far fa-envelope text-purple-600 text-xl"></i>
-                                <div>
-                                    <div class="text-sm text-gray-500">Contact Email</div>
-                                    <div class="font-semibold">{{ event.contact_email }}</div>
-                                </div>
-                            </div>
-                            {% endif %}
-                            {% if event.contact_number %}
-                            <div class="flex items-center gap-3">
-                                <i class="fas fa-phone text-purple-600 text-xl"></i>
-                                <div>
-                                    <div class="text-sm text-gray-500">Contact Number</div>
-                                    <div class="font-semibold">{{ event.contact_number }}</div>
-                                </div>
-                            </div>
-                            {% endif %}
                         </div>
+
+                        {% if event.location %}
+                        <div class="flex gap-4">
+                            <div class="w-11 h-11 flex-shrink-0 bg-purple-100 rounded-2xl flex items-center justify-center text-purple-600">
+                                <i class="fas fa-map-marker-alt text-2xl"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs uppercase tracking-widest text-gray-500 font-medium">Location</div>
+                                <div class="font-semibold mt-1">{{ event.location }}</div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="flex gap-4">
+                            <div class="w-11 h-11 flex-shrink-0 bg-purple-100 rounded-2xl flex items-center justify-center text-purple-600">
+                                <i class="fas fa-globe text-2xl"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs uppercase tracking-widest text-gray-500 font-medium">Region</div>
+                                <div class="font-semibold mt-1">{{ event.country_region }}</div>
+                            </div>
+                        </div>
+
+                        {% if event.contact_email %}
+                        <div class="flex gap-4">
+                            <div class="w-11 h-11 flex-shrink-0 bg-purple-100 rounded-2xl flex items-center justify-center text-purple-600">
+                                <i class="far fa-envelope text-2xl"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs uppercase tracking-widest text-gray-500 font-medium">Contact</div>
+                                <a href="mailto:{{ event.contact_email }}" class="font-medium hover:text-purple-600 transition-colors">
+                                    {{ event.contact_email }}
+                                </a>
+                            </div>
+                        </div>
+                        {% endif %}
                     </div>
-                    
-                    <!-- Event Description -->
-                    <div class="mb-8">
-                        <h2 class="text-2xl font-bold text-gray-800 mb-4">About This Event</h2>
-                        <div class="prose prose-lg max-w-none">
-                            <p class="text-lg leading-relaxed text-gray-700 whitespace-pre-line">{{ event.description }}</p>
-                        </div>
+
+                    <!-- Description -->
+                    <div class="prose prose-lg max-w-none text-gray-700 leading-relaxed mb-16">
+                        {{ event.description|linebreaks }}
                     </div>
-                    
-                    <!-- Subscription Form -->
-                    {% if form %}
-                    <div class="border-t border-gray-200 pt-8 mt-8">
-                        <div class="bg-gradient-to-br from-purple-50 to-indigo-50 p-8 rounded-xl">
-                            <h2 class="text-3xl font-bold text-gray-800 mb-2 text-center">
-                                <i class="fas fa-user-plus text-purple-600"></i> Register for This Event
-                            </h2>
-                            <p class="text-center text-gray-600 mb-6">Fill out the form below to secure your spot!</p>
-                            
-                            <form method="post" class="space-y-4">
-                                {% csrf_token %}
-                                <div class="space-y-4">
-                                    {% for field in form %}
-                                    <div>
-                                        <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                            {{ field.label }}
-                                            {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
-                                        </label>
-                                        {{ field }}
-                                        {% if field.errors %}
-                                        <p class="mt-1 text-sm text-red-600">{{ field.errors.0 }}</p>
-                                        {% endif %}
-                                        {% if field.help_text %}
-                                        <p class="mt-1 text-sm text-gray-500">{{ field.help_text }}</p>
-                                        {% endif %}
-                                    </div>
-                                    {% endfor %}
-                                </div>
-                                <button type="submit" class="w-full btn-primary text-white py-4 rounded-lg font-bold text-lg">
-                                    <i class="fas fa-check-circle mr-2"></i> Subscribe Now
-                                </button>
-                            </form>
+
+                    <!-- Registration Section -->
+                    {% if form and not event_has_passed %}
+                    <div class="bg-gradient-to-br from-white to-purple-50 border border-purple-100 rounded-3xl p-10 md:p-14 shadow-inner">
+                        <div class="text-center mb-10">
+                            <div class="inline-flex items-center justify-center w-16 h-16 bg-white rounded-2xl shadow mb-6">
+                                <i class="fas fa-user-plus text-3xl text-purple-600"></i>
+                            </div>
+                            <h2 class="text-3xl font-bold text-gray-900">Secure Your Spot</h2>
+                            <p class="text-gray-600 mt-3">Registration is free and only takes a moment</p>
                         </div>
+
+                        <form method="post" class="space-y-6">
+                            {% csrf_token %}
+
+                            {% for field in form %}
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                    {{ field.label }}
+                                    {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
+                                </label>
+                                {{ field }}
+                                {% if field.errors %}
+                                    <p class="mt-1 text-red-600 text-sm">{{ field.errors.0 }}</p>
+                                {% endif %}
+                                {% if field.help_text %}
+                                    <p class="mt-1 text-xs text-gray-500">{{ field.help_text }}</p>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+
+                            <button type="submit"
+                                    class="w-full btn-primary py-5 rounded-2xl text-lg font-semibold tracking-wide shadow-lg hover:shadow-xl transition-all">
+                                <i class="fas fa-check-circle mr-2"></i>
+                                REGISTER FOR THIS EVENT
+                            </button>
+                        </form>
                     </div>
-                    {% elif event.is_subscribable and event_has_passed %}
-                    <div class="border-t border-gray-200 pt-8 mt-8">
-                        <div class="bg-gray-100 p-8 rounded-xl text-center">
-                            <i class="fas fa-calendar-times text-gray-400 text-6xl mb-4"></i>
-                            <p class="text-xl font-semibold text-gray-600">Registration is closed for this event</p>
-                            <p class="text-gray-500 mt-2">This event has already taken place</p>
-                        </div>
+
+                    {% elif event_has_passed %}
+                    <div class="bg-gray-100 border border-gray-200 rounded-3xl p-12 text-center">
+                        <i class="fas fa-calendar-xmark text-6xl text-gray-400 mb-6"></i>
+                        <h3 class="text-2xl font-semibold text-gray-700">Registration Closed</h3>
+                        <p class="text-gray-600 mt-3">This event has already taken place.</p>
                     </div>
                     {% endif %}
-                    
-                    <!-- Back Button -->
-                    <div class="text-center mt-12">
-                        <a href="{% url 'event_list' %}" class="inline-flex items-center gap-2 btn-primary text-white px-8 py-3 rounded-lg font-semibold text-lg">
-                            <i class="fas fa-arrow-left"></i> Back to Events
+
+                    <!-- Back to Events -->
+                    <div class="text-center mt-16">
+                        <a href="{% url 'event_list' %}"
+                           class="inline-flex items-center gap-3 px-10 py-4 bg-white/70 hover:bg-white text-gray-700 rounded-2xl font-medium transition-all border border-white/60">
+                            ← Browse All Events
                         </a>
                     </div>
                 </div>
             </div>
         </div>
     </section>
-    
-    <style>
-        /* Style form fields */
-        form input[type="text"],
-        form input[type="email"],
-        form input[type="tel"],
-        form textarea {
-            width: 100%;
-            padding: 0.75rem;
-            border: 2px solid #e5e7eb;
-            border-radius: 0.5rem;
-            font-size: 1rem;
-            transition: border-color 0.2s;
-        }
-        form input[type="text"]:focus,
-        form input[type="email"]:focus,
-        form input[type="tel"]:focus,
-        form textarea:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-        form textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-    </style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Optional: Smooth scroll or any extra interactivity
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+</script>
 {% endblock %}

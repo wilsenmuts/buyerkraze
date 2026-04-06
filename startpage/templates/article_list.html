@@ -1,78 +1,142 @@
 {% extends 'base.html' %}
-
 {% block title %}Articles - BuyerKraze{% endblock %}
-
 {% block content %}
-    <section class="py-8">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-12">
-                <h1 class="text-5xl font-bold text-white mb-4">Inspiring Articles & Tips</h1>
-                <p class="text-xl text-white/90 max-w-2xl mx-auto">Discover insights, trends, and stories from the world of reverse marketplaces</p>
+<div class="pt-20">
+
+  <!-- Page Hero -->
+  <section class="relative overflow-hidden py-20 px-5">
+    <div class="absolute inset-0 pointer-events-none">
+      <div class="absolute -top-24 -left-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+      <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+    </div>
+    <div class="max-w-3xl mx-auto text-center relative z-10">
+      <span class="inline-flex items-center gap-2 bg-white/15 text-white/90 text-xs font-semibold uppercase tracking-widest px-4 py-1.5 rounded-full mb-5 backdrop-blur-sm border border-white/20">
+        <i class="fas fa-newspaper text-purple-200"></i> BuyerKraze Blog
+      </span>
+      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-5">
+        Insights &amp; <span class="text-purple-200">Ideas</span>
+      </h1>
+      <p class="text-lg text-white/75 max-w-xl mx-auto">
+        Trends, tips, and stories from the world of reverse marketplaces — written for buyers and sellers alike.
+      </p>
+    </div>
+  </section>
+
+  <!-- Articles -->
+  <section class="pb-20 px-5">
+    <div class="max-w-7xl mx-auto">
+
+      {% if articles %}
+
+      <!-- Featured first article -->
+      {% with articles.0 as featured %}
+      <a href="{% url 'article_detail' featured.pk %}" class="group block mb-12">
+        <div class="relative rounded-3xl overflow-hidden bg-white shadow-2xl shadow-purple-900/20 md:flex min-h-[340px]">
+          <div class="md:w-1/2 h-64 md:h-auto overflow-hidden flex-shrink-0">
+            {% if featured.featured_image %}
+            <img src="{{ featured.featured_image.url }}" alt="{{ featured.title }}"
+                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+            {% else %}
+            <div class="w-full h-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center">
+              <i class="fas fa-newspaper text-white/30 text-8xl"></i>
             </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {% for article in articles %}
-                <article class="glass-effect rounded-2xl overflow-hidden card-hover">
-                    {% if article.featured_image %}
-                    <div class="h-48 overflow-hidden">
-                        <img src="{{ article.featured_image.url }}" alt="{{ article.title }}" class="w-full h-full object-cover">
-                    </div>
-                    {% else %}
-                    <div class="h-48 bg-gradient-to-br from-purple-400 to-indigo-500 flex items-center justify-center">
-                        <i class="fas fa-newspaper text-white text-6xl opacity-50"></i>
-                    </div>
-                    {% endif %}
-                    
-                    <div class="p-6">
-                        <a href="{% url 'article_detail' article.pk %}" class="block">
-                            <h2 class="text-2xl font-bold text-gray-800 mb-3 hover:text-purple-600 transition-colors">
-                                {{ article.title }}
-                            </h2>
-                        </a>
-                        
-                        <p class="text-gray-600 mb-4 line-clamp-3">{{ article.content|truncatewords:20 }}</p>
-                        
-                        <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
-                            <span class="flex items-center gap-1">
-                                <i class="far fa-calendar"></i>
-                                {{ article.published_date|date:"M d, Y" }}
-                            </span>
-                            <span class="flex items-center gap-1">
-                                <i class="far fa-eye"></i>
-                                {{ article.view_count }} views
-                            </span>
-                        </div>
-                        
-                        <div class="flex items-center justify-between pt-4 border-t border-gray-200">
-                            <div class="flex items-center gap-4">
-                                <span class="flex items-center gap-1 text-green-600">
-                                    <i class="fas fa-thumbs-up"></i>
-                                    <span class="font-semibold">{{ article.likes }}</span>
-                                </span>
-                                <span class="flex items-center gap-1 text-red-600">
-                                    <i class="fas fa-thumbs-down"></i>
-                                    <span class="font-semibold">{{ article.dislikes }}</span>
-                                </span>
-                            </div>
-                            <a href="{% url 'article_detail' article.pk %}" class="btn-primary text-white px-4 py-2 rounded-lg font-semibold text-sm">
-                                Read More <i class="fas fa-arrow-right ml-1"></i>
-                            </a>
-                        </div>
-                    </div>
-                </article>
-                {% empty %}
-                <div class="col-span-full text-center glass-effect rounded-2xl p-12">
-                    <i class="fas fa-newspaper text-purple-600 text-6xl mb-4 opacity-50"></i>
-                    <p class="text-2xl font-semibold text-gray-700">No articles yet. Stay tuned for exciting updates!</p>
-                </div>
-                {% endfor %}
+            {% endif %}
+            <span class="absolute top-5 left-5 bg-purple-600 text-white text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-full shadow">
+              Featured
+            </span>
+          </div>
+          <div class="md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
+            <div class="flex items-center gap-3 text-gray-400 text-sm mb-4">
+              <span class="flex items-center gap-1.5"><i class="far fa-calendar"></i>{{ featured.published_date|date:"M d, Y" }}</span>
+              <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+              <span class="flex items-center gap-1.5"><i class="far fa-eye"></i>{{ featured.view_count }} views</span>
             </div>
-            
-            <div class="mt-12 text-center">
-                <a href="{% url 'start' %}" class="inline-flex items-center gap-2 btn-primary text-white px-8 py-3 rounded-lg font-semibold text-lg">
-                    <i class="fas fa-home"></i> Back to Home
-                </a>
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-4 group-hover:text-purple-600 transition-colors leading-snug">
+              {{ featured.title }}
+            </h2>
+            <p class="text-gray-500 leading-relaxed mb-6 line-clamp-3">{{ featured.content|truncatewords:30 }}</p>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-4 text-sm">
+                <span class="flex items-center gap-1.5 text-emerald-600 font-semibold">
+                  <i class="fas fa-thumbs-up"></i> {{ featured.likes }}
+                </span>
+                <span class="flex items-center gap-1.5 text-red-500 font-semibold">
+                  <i class="fas fa-thumbs-down"></i> {{ featured.dislikes }}
+                </span>
+              </div>
+              <span class="inline-flex items-center gap-2 bg-purple-600 group-hover:bg-purple-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors">
+                Read Article <i class="fas fa-arrow-right text-xs"></i>
+              </span>
             </div>
+          </div>
         </div>
-    </section>
+      </a>
+      {% endwith %}
+
+      <!-- Grid of remaining articles -->
+      {% if articles|length > 1 %}
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
+        {% for article in articles %}
+        {% if not forloop.first %}
+        <a href="{% url 'article_detail' article.pk %}" class="group block">
+          <article class="bg-white rounded-2xl overflow-hidden shadow-lg shadow-purple-900/10 hover:shadow-xl hover:shadow-purple-900/20 hover:-translate-y-1.5 transition-all duration-300 h-full flex flex-col">
+            <div class="h-48 overflow-hidden flex-shrink-0">
+              {% if article.featured_image %}
+              <img src="{{ article.featured_image.url }}" alt="{{ article.title }}"
+                   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+              {% else %}
+              <div class="w-full h-full bg-gradient-to-br from-violet-400 via-purple-500 to-indigo-500 flex items-center justify-center">
+                <i class="fas fa-newspaper text-white/30 text-5xl"></i>
+              </div>
+              {% endif %}
+            </div>
+            <div class="p-6 flex flex-col flex-1">
+              <div class="flex items-center gap-3 text-gray-400 text-xs mb-3">
+                <span class="flex items-center gap-1"><i class="far fa-calendar"></i>{{ article.published_date|date:"M d, Y" }}</span>
+                <span class="w-1 h-1 bg-gray-200 rounded-full"></span>
+                <span class="flex items-center gap-1"><i class="far fa-eye"></i>{{ article.view_count }}</span>
+              </div>
+              <h2 class="text-lg font-bold text-gray-800 mb-2 group-hover:text-purple-600 transition-colors leading-snug line-clamp-2">
+                {{ article.title }}
+              </h2>
+              <p class="text-gray-500 text-sm leading-relaxed mb-5 line-clamp-3 flex-1">
+                {{ article.content|truncatewords:18 }}
+              </p>
+              <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                <div class="flex items-center gap-3 text-xs font-semibold">
+                  <span class="flex items-center gap-1 text-emerald-600"><i class="fas fa-thumbs-up"></i> {{ article.likes }}</span>
+                  <span class="flex items-center gap-1 text-red-400"><i class="fas fa-thumbs-down"></i> {{ article.dislikes }}</span>
+                </div>
+                <span class="text-purple-600 text-xs font-semibold flex items-center gap-1 group-hover:gap-2 transition-all">
+                  Read more <i class="fas fa-arrow-right text-[10px]"></i>
+                </span>
+              </div>
+            </div>
+          </article>
+        </a>
+        {% endif %}
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% else %}
+      <!-- Empty state -->
+      <div class="max-w-md mx-auto text-center bg-white/10 backdrop-blur-sm border border-white/20 rounded-3xl p-14">
+        <div class="w-20 h-20 bg-white/15 rounded-2xl flex items-center justify-center mx-auto mb-6">
+          <i class="fas fa-newspaper text-white/60 text-3xl"></i>
+        </div>
+        <h3 class="text-2xl font-bold text-white mb-2">No articles yet</h3>
+        <p class="text-white/60 text-sm">Check back soon — great content is on its way.</p>
+      </div>
+      {% endif %}
+
+      <div class="mt-14 text-center">
+        <a href="{% url 'start' %}" class="inline-flex items-center gap-2 bg-white/15 hover:bg-white/25 border border-white/30 text-white font-semibold px-7 py-3 rounded-xl backdrop-blur-sm transition-all">
+          <i class="fas fa-arrow-left text-sm"></i> Back to Home
+        </a>
+      </div>
+
+    </div>
+  </section>
+</div>
 {% endblock %}
