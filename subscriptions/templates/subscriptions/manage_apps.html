@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Apps - Admin Dashboard | BuyerKraze</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen">
+        <!-- Header -->
+        <header class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg">
+            <div class="container mx-auto px-4 py-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h1 class="text-3xl font-bold">
+                            <i class="fas fa-cubes mr-2"></i>Manage Applications
+                        </h1>
+                        <p class="text-purple-200">Create, edit, and manage your applications</p>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <a href="{% url 'admin_dashboard' %}" class="bg-white text-purple-600 px-4 py-2 rounded-lg font-semibold hover:bg-gray-100">
+                            <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
+                        </a>
+                        <a href="{% url 'start' %}" class="bg-white/20 text-white px-4 py-2 rounded-lg font-semibold hover:bg-white/30">
+                            <i class="fas fa-home mr-2"></i>View Site
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Nav Tabs -->
+        <div class="bg-white shadow border-b">
+            <div class="container mx-auto px-4">
+                <div class="flex space-x-1">
+                    <a href="{% url 'manage_apps' %}" class="px-6 py-4 text-sm font-semibold border-b-2 border-purple-600 text-purple-600 inline-flex items-center gap-2">
+                        <i class="fas fa-cubes"></i> Apps
+                    </a>
+                    <a href="{% url 'manage_tiers' %}" class="px-6 py-4 text-sm font-semibold text-gray-600 hover:text-purple-600 hover:border-b-2 hover:border-purple-600 inline-flex items-center gap-2">
+                        <i class="fas fa-key"></i> Tiers
+                    </a>
+                    <a href="{% url 'subscription_list' %}" class="px-6 py-4 text-sm font-semibold text-gray-600 hover:text-purple-600 hover:border-b-2 hover:border-purple-600 inline-flex items-center gap-2">
+                        <i class="fas fa-list"></i> Subscriptions
+                    </a>
+                    <a href="{% url 'subscription_analytics' %}" class="px-6 py-4 text-sm font-semibold text-gray-600 hover:text-purple-600 hover:border-b-2 hover:border-purple-600 inline-flex items-center gap-2">
+                        <i class="fas fa-chart-bar"></i> Analytics
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="container mx-auto px-4 py-8">
+            {% if messages %}
+            <div class="mb-6 space-y-2">
+                {% for message in messages %}
+                <div class="flex items-center justify-between px-6 py-4 rounded-lg shadow {% if message.tags == 'error' %}bg-red-100 text-red-800 border border-red-200{% else %}bg-green-100 text-green-800 border border-green-200{% endif %}">
+                    <span>{% if message.tags == 'error' %}<i class="fas fa-exclamation-circle mr-2"></i>{% else %}<i class="fas fa-check-circle mr-2"></i>{% endif %}{{ message }}</span>
+                    <button onclick="this.parentElement.remove()" class="text-sm font-semibold hover:opacity-75">&times;</button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Create App Form -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h2 class="text-xl font-bold mb-4 flex items-center">
+                        <i class="fas fa-plus-circle mr-2 text-green-600"></i>
+                        Create New App
+                    </h2>
+                    <form method="POST" action="{% url 'manage_apps' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="create">
+
+                        <div class="mb-4">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">App Name *</label>
+                            <input type="text" name="name" required placeholder="e.g., Campus Eats"
+                                   class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">App Code *</label>
+                            <input type="text" name="code" required placeholder="e.g., campuseats"
+                                   class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none">
+                            <p class="text-xs text-gray-500 mt-1">Unique identifier used in API calls (lowercase, no spaces)</p>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Description</label>
+                            <textarea name="description" rows="3" placeholder="What does this app do?"
+                                      class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none"></textarea>
+                        </div>
+
+                        <button type="submit" class="w-full bg-green-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-green-700">
+                            <i class="fas fa-plus mr-2"></i>Create App
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Apps List -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h2 class="text-xl font-bold flex items-center">
+                                <i class="fas fa-list mr-2 text-purple-600"></i>
+                                All Applications
+                                <span class="ml-3 bg-purple-100 text-purple-800 text-sm px-3 py-1 rounded-full">{{ apps|length }} total</span>
+                            </h2>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gray-100">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left">Name</th>
+                                        <th class="px-4 py-3 text-left">Code</th>
+                                        <th class="px-4 py-3 text-left">Description</th>
+                                        <th class="px-4 py-3 text-left">Status</th>
+                                        <th class="px-4 py-3 text-left">Created</th>
+                                        <th class="px-4 py-3 text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200">
+                                    {% for app in apps %}
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3 font-semibold">{{ app.name }}</td>
+                                        <td class="px-4 py-3">
+                                            <code class="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded">{{ app.code }}</code>
+                                        </td>
+                                        <td class="px-4 py-3 text-sm text-gray-600 max-w-xs truncate">{{ app.description|default:'—' }}</td>
+                                        <td class="px-4 py-3">
+                                            {% if app.is_active %}
+                                            <span class="bg-green-100 text-green-800 text-xs font-semibold px-3 py-1 rounded-full">
+                                                <i class="fas fa-check-circle mr-1"></i> Active
+                                            </span>
+                                            {% else %}
+                                            <span class="bg-red-100 text-red-800 text-xs font-semibold px-3 py-1 rounded-full">
+                                                <i class="fas fa-times-circle mr-1"></i> Inactive
+                                            </span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="px-4 py-3 text-sm text-gray-500">{{ app.created_at|date:"M d, Y" }}</td>
+                                        <td class="px-4 py-3 text-center">
+                                            <div class="flex items-center justify-center gap-2">
+                                                <button onclick="openEditApp({{ app.id }}, '{{ app.name|escapejs }}', '{{ app.code|escapejs }}', '{{ app.description|escapejs }}', {{ app.is_active|lower }})"
+                                                        class="bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded-lg text-sm font-semibold hover:bg-indigo-200">
+                                                    <i class="fas fa-edit mr-1"></i> Edit
+                                                </button>
+                                                <form method="POST" action="{% url 'manage_apps' %}" onsubmit="return confirm('Delete app &quot;{{ app.name }}&quot;? This cannot be undone if it has no tiers.')">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="action" value="delete">
+                                                    <input type="hidden" name="app_id" value="{{ app.id }}">
+                                                    <button type="submit" class="bg-red-100 text-red-700 px-3 py-1.5 rounded-lg text-sm font-semibold hover:bg-red-200">
+                                                        <i class="fas fa-trash mr-1"></i> Delete
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="6" class="px-4 py-12 text-center text-gray-500">
+                                            <i class="fas fa-cubes text-4xl mb-3 block text-gray-300"></i>
+                                            <p class="text-lg font-semibold mb-1">No apps yet</p>
+                                            <p class="text-sm">Create your first application using the form on the left.</p>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit App Modal -->
+    <div id="editAppModal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50" onclick="closeEditApp()"></div>
+        <div class="relative min-h-screen flex items-center justify-center p-4">
+            <div class="bg-white rounded-xl shadow-2xl w-full max-w-md p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold flex items-center">
+                        <i class="fas fa-edit mr-2 text-indigo-600"></i> Edit App
+                    </h3>
+                    <button onclick="closeEditApp()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+                </div>
+                <form method="POST" action="{% url 'manage_apps' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="edit">
+                    <input type="hidden" name="app_id" id="editAppId">
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">App Name *</label>
+                        <input type="text" name="name" id="editAppName" required
+                               class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">App Code *</label>
+                        <input type="text" name="code" id="editAppCode" required
+                               class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Description</label>
+                        <textarea name="description" id="editAppDescription" rows="3"
+                                  class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none"></textarea>
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" name="is_active" id="editAppActive" class="w-5 h-5 text-purple-600 rounded focus:ring-purple-500">
+                            <span class="text-sm font-semibold text-gray-700">App is active</span>
+                        </label>
+                    </div>
+
+                    <div class="flex gap-3">
+                        <button type="button" onclick="closeEditApp()" class="flex-1 bg-gray-200 text-gray-700 py-3 px-4 rounded-lg font-semibold hover:bg-gray-300">
+                            Cancel
+                        </button>
+                        <button type="submit" class="flex-1 bg-indigo-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-indigo-700">
+                            <i class="fas fa-save mr-2"></i>Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openEditApp(id, name, code, description, isActive) {
+            document.getElementById('editAppId').value = id;
+            document.getElementById('editAppName').value = name;
+            document.getElementById('editAppCode').value = code;
+            document.getElementById('editAppDescription').value = description;
+            document.getElementById('editAppActive').checked = isActive;
+            document.getElementById('editAppModal').classList.remove('hidden');
+        }
+
+        function closeEditApp() {
+            document.getElementById('editAppModal').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>

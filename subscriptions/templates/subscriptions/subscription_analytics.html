@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscription Analytics - Admin Dashboard | BuyerKraze</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen">
+        <!-- Header -->
+        <header class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg">
+            <div class="container mx-auto px-4 py-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h1 class="text-3xl font-bold">
+                            <i class="fas fa-chart-bar mr-2"></i>Subscription Analytics
+                        </h1>
+                        <p class="text-purple-200">Insights and metrics for all subscriptions</p>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <a href="{% url 'admin_dashboard' %}" class="bg-white text-purple-600 px-4 py-2 rounded-lg font-semibold hover:bg-gray-100">
+                            <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
+                        </a>
+                        <a href="{% url 'start' %}" class="bg-white/20 text-white px-4 py-2 rounded-lg font-semibold hover:bg-white/30">
+                            <i class="fas fa-home mr-2"></i>View Site
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <div class="bg-white shadow border-b">
+            <div class="container mx-auto px-4">
+                <div class="flex space-x-1">
+                    <a href="{% url 'manage_apps' %}" class="px-6 py-4 text-sm font-semibold text-gray-600 hover:text-purple-600 hover:border-b-2 hover:border-purple-600 inline-flex items-center gap-2">
+                        <i class="fas fa-cubes"></i> Apps
+                    </a>
+                    <a href="{% url 'manage_tiers' %}" class="px-6 py-4 text-sm font-semibold text-gray-600 hover:text-purple-600 hover:border-b-2 hover:border-purple-600 inline-flex items-center gap-2">
+                        <i class="fas fa-key"></i> Tiers
+                    </a>
+                    <a href="{% url 'subscription_list' %}" class="px-6 py-4 text-sm font-semibold text-gray-600 hover:text-purple-600 hover:border-b-2 hover:border-purple-600 inline-flex items-center gap-2">
+                        <i class="fas fa-list"></i> Subscriptions
+                    </a>
+                    <a href="{% url 'subscription_analytics' %}" class="px-6 py-4 text-sm font-semibold border-b-2 border-purple-600 text-purple-600 inline-flex items-center gap-2">
+                        <i class="fas fa-chart-bar"></i> Analytics
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="container mx-auto px-4 py-8">
+            <!-- KPI Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="dashboard-card bg-white rounded-lg shadow-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm">Total Subscriptions</p>
+                            <p class="text-3xl font-bold text-purple-600">{{ total_subscriptions }}</p>
+                        </div>
+                        <div class="bg-purple-100 p-4 rounded-full">
+                            <i class="fas fa-key text-purple-600 text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card bg-white rounded-lg shadow-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm">Active Now</p>
+                            <p class="text-3xl font-bold text-green-600">{{ active_subscriptions }}</p>
+                        </div>
+                        <div class="bg-green-100 p-4 rounded-full">
+                            <i class="fas fa-check-circle text-green-600 text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card bg-white rounded-lg shadow-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm">New (30 days)</p>
+                            <p class="text-3xl font-bold text-blue-600">{{ new_subscriptions_30d }}</p>
+                        </div>
+                        <div class="bg-blue-100 p-4 rounded-full">
+                            <i class="fas fa-user-plus text-blue-600 text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card bg-white rounded-lg shadow-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm">Est. Monthly Revenue</p>
+                            <p class="text-3xl font-bold text-indigo-600">${{ total_potential_revenue|floatformat:0 }}</p>
+                        </div>
+                        <div class="bg-indigo-100 p-4 rounded-full">
+                            <i class="fas fa-dollar-sign text-indigo-600 text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <!-- Subscription Status Pie Chart -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h2 class="text-xl font-bold mb-4 flex items-center">
+                        <i class="fas fa-chart-pie mr-2 text-purple-600"></i>
+                        Subscription Status Breakdown
+                    </h2>
+                    <div class="relative" style="height: 300px;">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- New Subscriptions Line Chart -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h2 class="text-xl font-bold mb-4 flex items-center">
+                        <i class="fas fa-chart-line mr-2 text-purple-600"></i>
+                        New Subscriptions (Last 30 Days)
+                    </h2>
+                    <div class="relative" style="height: 300px;">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Second Charts Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Subscriptions by Tier -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h2 class="text-xl font-bold mb-4 flex items-center">
+                        <i class="fas fa-layer-group mr-2 text-purple-600"></i>
+                        Subscriptions by Tier
+                    </h2>
+                    <div class="relative" style="height: 300px;">
+                        <canvas id="tierChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Active Subscriptions by Tier -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h2 class="text-xl font-bold mb-4 flex items-center">
+                        <i class="fas fa-users mr-2 text-purple-600"></i>
+                        Active Subscribers by Tier
+                    </h2>
+                    <div class="relative" style="height: 300px;">
+                        <canvas id="activeTierChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Subscriptions by App -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h2 class="text-xl font-bold mb-4 flex items-center">
+                        <i class="fas fa-mobile-alt mr-2 text-purple-600"></i>
+                        Subscriptions by App
+                    </h2>
+                    <div class="relative" style="height: 300px;">
+                        <canvas id="appChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alerts Row -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-yellow-500">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="font-semibold text-gray-800">Expiring Soon</h3>
+                        <i class="fas fa-exclamation-triangle text-yellow-500 text-xl"></i>
+                    </div>
+                    <p class="text-3xl font-bold text-yellow-600">{{ expiring_soon }}</p>
+                    <p class="text-sm text-gray-600">Subscriptions expiring within 7 days</p>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-red-500">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="font-semibold text-gray-800">Overdue</h3>
+                        <i class="fas fa-clock text-red-500 text-xl"></i>
+                    </div>
+                    <p class="text-3xl font-bold text-red-600">{{ overdue }}</p>
+                    <p class="text-sm text-gray-600">Marked active but past end date</p>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-green-500">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="font-semibold text-gray-800">New This Week</h3>
+                        <i class="fas fa-rocket text-green-500 text-xl"></i>
+                    </div>
+                    <p class="text-3xl font-bold text-green-600">{{ new_subscriptions_7d }}</p>
+                    <p class="text-sm text-gray-600">Subscriptions created in last 7 days</p>
+                </div>
+            </div>
+
+            <!-- Tier Details Table -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-xl font-bold mb-4 flex items-center">
+                    <i class="fas fa-table mr-2 text-purple-600"></i>
+                    Tier Details
+                </h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-4 py-3 text-left">Tier</th>
+                                <th class="px-4 py-3 text-left">Price</th>
+                                <th class="px-4 py-3 text-left">Duration</th>
+                                <th class="px-4 py-3 text-left">Rate Limit</th>
+                                <th class="px-4 py-3 text-left">Total Subscriptions</th>
+                                <th class="px-4 py-3 text-left">Active</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            {% for tier in access_tiers %}
+                            {% with tier_id=tier.id %}
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3">
+                                    <span class="bg-indigo-100 text-indigo-800 text-xs font-semibold px-3 py-1 rounded-full">
+                                        {{ tier.name }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3 font-semibold">${{ tier.price }}</td>
+                                <td class="px-4 py-3">{{ tier.duration_days }} days</td>
+                                <td class="px-4 py-3">{{ tier.max_requests_per_day }}/day</td>
+                                <td class="px-4 py-3">
+                                    {% for t in subscriptions_by_tier %}
+                                        {% if t.access_key__name == tier.name %}
+                                            {{ t.count }}
+                                        {% endif %}
+                                    {% endfor %}
+                                </td>
+                                <td class="px-4 py-3">
+                                    {% for t in active_by_tier %}
+                                        {% if t.access_key__name == tier.name %}
+                                            <span class="text-green-600 font-semibold">{{ t.count }}</span>
+                                        {% endif %}
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                            {% endwith %}
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="px-4 py-8 text-center text-gray-500">No tiers configured yet</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Status Pie Chart
+        const statusCtx = document.getElementById('statusChart').getContext('2d');
+        new Chart(statusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Active', 'Expired', 'Cancelled', 'Pending'],
+                datasets: [{
+                    data: [
+                        {{ active_subscriptions }},
+                        {{ expired_subscriptions }},
+                        {{ cancelled_subscriptions }},
+                        {{ pending_subscriptions }}
+                    ],
+                    backgroundColor: ['#10b981', '#ef4444', '#6b7280', '#eab308'],
+                    borderWidth: 2,
+                    borderColor: '#ffffff',
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    }
+                }
+            }
+        });
+
+        // Trend Line Chart
+        const trendCtx = document.getElementById('trendChart').getContext('2d');
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: [
+                    {% for item in daily_new %}
+                    '{{ item.date }}'{% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                ],
+                datasets: [{
+                    label: 'New Subscriptions',
+                    data: [
+                        {% for item in daily_new %}
+                        {{ item.count }}{% if not forloop.last %},{% endif %}
+                        {% endfor %}
+                    ],
+                    borderColor: '#8b5cf6',
+                    backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 3,
+                    pointBackgroundColor: '#8b5cf6',
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false,
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            maxTicksLimit: 10,
+                            font: { size: 10 }
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,
+                            font: { size: 10 }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Subscriptions by Tier Bar Chart
+        const tierCtx = document.getElementById('tierChart').getContext('2d');
+        new Chart(tierCtx, {
+            type: 'bar',
+            data: {
+                labels: [
+                    {% for item in subscriptions_by_tier %}
+                    '{{ item.access_key__name }}'{% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                ],
+                datasets: [{
+                    label: 'Total Subscriptions',
+                    data: [
+                        {% for item in subscriptions_by_tier %}
+                        {{ item.count }}{% if not forloop.last %},{% endif %}
+                        {% endfor %}
+                    ],
+                    backgroundColor: ['#8b5cf6', '#6366f1', '#4f46e5', '#4338ca', '#3730a3'],
+                    borderRadius: 6,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false,
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,
+                            font: { size: 10 }
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            font: { size: 11 }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Active Subscribers by Tier Bar Chart
+        const activeTierCtx = document.getElementById('activeTierChart').getContext('2d');
+        new Chart(activeTierCtx, {
+            type: 'bar',
+            data: {
+                labels: [
+                    {% for item in active_by_tier %}
+                    '{{ item.access_key__name }}'{% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                ],
+                datasets: [{
+                    label: 'Active Subscribers',
+                    data: [
+                        {% for item in active_by_tier %}
+                        {{ item.count }}{% if not forloop.last %},{% endif %}
+                        {% endfor %}
+                    ],
+                    backgroundColor: ['#10b981', '#34d399', '#6ee7b7', '#a7f3d0', '#d1fae5'],
+                    borderRadius: 6,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false,
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,
+                            font: { size: 10 }
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            font: { size: 11 }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Subscriptions by App Pie Chart
+        const appCtx = document.getElementById('appChart').getContext('2d');
+        new Chart(appCtx, {
+            type: 'doughnut',
+            data: {
+                labels: [
+                    {% for item in subscriptions_by_app %}
+                    '{{ item.app__name }}'{% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                ],
+                datasets: [{
+                    data: [
+                        {% for item in subscriptions_by_app %}
+                        {{ item.count }}{% if not forloop.last %},{% endif %}
+                        {% endfor %}
+                    ],
+                    backgroundColor: ['#8b5cf6', '#f59e0b', '#06b6d4', '#ec4899', '#10b981'],
+                    borderWidth: 2,
+                    borderColor: '#ffffff',
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

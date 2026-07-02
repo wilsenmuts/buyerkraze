@@ -7,6 +7,7 @@ from django.utils import timezone
 from datetime import timedelta
 from .models import ActiveSession, SiteSettings
 from django.contrib.auth import get_user_model
+from subscriptions.models import Subscription
 import platform
 
 User = get_user_model()
@@ -27,6 +28,12 @@ def admin_dashboard(request):
     # Get all users
     users = User.objects.all().order_by('-date_joined')
     
+    # Subscription counts
+    total_subscriptions = Subscription.objects.count()
+    active_count = Subscription.objects.filter(status='active').count()
+    expired_count = Subscription.objects.filter(status='expired').count()
+    cancelled_count = Subscription.objects.filter(status='cancelled').count()
+
     context = {
         'site_settings': site_settings,
         'total_sessions': total_sessions,
@@ -37,7 +44,11 @@ def admin_dashboard(request):
             'os': platform.system(),
             'os_version': platform.release(),
             'python_version': platform.python_version(),
-        }
+        },
+        'total_subscriptions': total_subscriptions,
+        'active_count': active_count,
+        'expired_count': expired_count,
+        'cancelled_count': cancelled_count,
     }
     
     return render(request, 'admin_dashboard.html', context)
