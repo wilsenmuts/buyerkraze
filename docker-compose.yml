@@ -1,0 +1,61 @@
+# ------------------------------------------------------------------
+# BuyerKraze - Docker Compose
+#
+# Defaults to a development setup:
+#   - Bind-mounts the source so edits are reflected live (runserver)
+#   - Uses SQLite (db.sqlite3 persists on the host via the bind mount)
+#   - Media uploads persist in the `media_data` volume
+#
+# Configuration is read from environment variables, optionally from a
+# `.env` file in this directory (see .env.example).
+# ------------------------------------------------------------------
+name: buyerkraze
+
+services:
+  web:
+    build: .
+    # Development server with auto-reload. For a production-like run,
+    # remove this line so the Dockerfile's gunicorn CMD is used instead.
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    environment:
+      - DJANGO_DEBUG=${DJANGO_DEBUG:-true}
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:-django-insecure-docker-dev-key-change-me}
+      - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1,www.buyerkraze.com}
+      - DB_ENGINE=${DB_ENGINE:-django.db.backends.sqlite3}
+      - DB_NAME=${DB_NAME:-db.sqlite3}
+      - DB_USER=${DB_USER:-buyerkraze}
+      - DB_PASSWORD=${DB_PASSWORD:-buyerkraze}
+      - DB_HOST=${DB_HOST:-db}
+      - DB_PORT=${DB_PORT:-5432}
+      # Optional: auto-create a superuser on first start
+      - DJANGO_SUPERUSER_USERNAME=${DJANGO_SUPERUSER_USERNAME:-}
+      - DJANGO_SUPERUSER_EMAIL=${DJANGO_SUPERUSER_EMAIL:-}
+      - DJANGO_SUPERUSER_PASSWORD=${DJANGO_SUPERUSER_PASSWORD:-}
+    volumes:
+      - .:/app
+      - media_data:/app/media
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  # Optional PostgreSQL service. To use it, set DB_ENGINE
+  # to django.db.backends.postgresql in your .env, then uncomment:
+  # db:
+  #   image: postgres:16-alpine
+  #   environment:
+  #     - POSTGRES_DB=${DB_NAME:-buyerkraze}
+  #     - POSTGRES_USER=${DB_USER:-buyerkraze}
+  #     - POSTGRES_PASSWORD=${DB_PASSWORD:-buyerkraze}
+  #   volumes:
+  #     - pg_data:/var/lib/postgresql/data
+  #   restart: unless-stopped
+
+volumes:
+  media_data:
+  # pg_data:

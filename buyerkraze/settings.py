@@ -108,10 +108,88 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# default static files settings for PythonAnywhere.
-# see https://help.pythonanywhere.com/pages/DjangoStaticFiles for more info
+# ---------------------------------------------------------------------------
+# Environment-driven defaults.
+# Used when running in Docker (or on any host without local_settings.py).
+# local_settings.py below can override any of these for local development.
+# ---------------------------------------------------------------------------
+import os
+from dotenv import load_dotenv
+
+# Load variables from a .env file if present (e.g. when running via Docker).
+load_dotenv(BASE_DIR / ".env")
 
 
+def _env_bool(name, default=False):
+    value = os.environ.get(name)
+    if value is None:
+        return default
+    return value.strip().lower() in ("1", "true", "yes", "on")
+
+
+def _env_list(name, default=""):
+    return [
+        item.strip()
+        for item in os.environ.get(name, default).split(",")
+        if item.strip()
+    ]
+
+
+# Security
+SECRET_KEY = os.environ.get(
+    "DJANGO_SECRET_KEY",
+    "django-insecure-i(f6$@fn#eh%wy1k-0w+#xvr^fpituy3@qi605-)pm85&x1z6^",
+)
+DEBUG = _env_bool("DJANGO_DEBUG", default=True)
+ALLOWED_HOSTS = _env_list(
+    "DJANGO_ALLOWED_HOSTS",
+    "localhost,127.0.0.1,www.buyerkraze.com",
+)
+
+# Database (SQLite by default). Set DB_ENGINE to a postgres engine and the
+# matching DB_* variables to use PostgreSQL.
+_DB_ENGINE = os.environ.get("DB_ENGINE", "django.db.backends.sqlite3")
+DATABASES = {
+    "default": {
+        "ENGINE": _DB_ENGINE,
+        "NAME": os.environ.get("DB_NAME", BASE_DIR / "db.sqlite3"),
+    }
+}
+if _DB_ENGINE.startswith("django.db.backends.postgresql"):
+    DATABASES["default"].update(
+        {
+            "USER": os.environ.get("DB_USER", "buyerkraze"),
+            "PASSWORD": os.environ.get("DB_PASSWORD", "buyerkraze"),
+            "HOST": os.environ.get("DB_HOST", "db"),
+            "PORT": os.environ.get("DB_PORT", "5432"),
+        }
+    )
+
+# GeoIP / sessions
+GEOIP_PATH = os.environ.get("GEOIP_PATH", BASE_DIR / "geoip")
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
+
+# Media / static files
+MEDIA_ROOT = os.environ.get("MEDIA_ROOT", BASE_DIR / "media")
+MEDIA_URL = "/media/"
+STATIC_ROOT = os.environ.get("STATIC_ROOT", BASE_DIR / "static")
+STATIC_URL = "/static/"
+
+# Internationalization
+LANGUAGE_CODE = "en-us"
+TIME_ZONE = "UTC"
+USE_I18N = True
+USE_TZ = True
+
+# Social media links
+SOCIAL_MEDIA_LINKS = {
+    "facebook": "https://www.facebook.com/buyerkraze",
+    "twitter": "https://twitter.com/buyerkraze",
+    "instagram": "https://www.instagram.com/buyerkraze",
+    "linkedin": "https://www.linkedin.com/company/buyerkraze",
+}
+
+# Local development overrides (kept for backwards compatibility).
 try:
     from .local_settings import *
 except ImportError:

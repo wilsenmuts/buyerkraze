@@ -20,6 +20,8 @@ Thumbs.db
 # Ignore virtualenv files
 venv/
 env/
+.venv/
+docker-compose.override.yml
 
 # Ignore other files
 *.sqlite3
