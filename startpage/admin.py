@@ -7,8 +7,10 @@ class CountryLinkAdmin(admin.ModelAdmin):
 
 @admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
-    list_display = ('title', 'published_date', 'updated_date', 'view_count', 'likes', 'dislikes')
+    list_display = ('title', 'published_date', 'updated_date', 'view_count', 'likes', 'dislikes', 'editor_mode', 'author')
+    list_filter = ('editor_mode', 'published_date')
     readonly_fields = ('view_count', 'likes', 'dislikes')
+    search_fields = ('title', 'content')
 
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):

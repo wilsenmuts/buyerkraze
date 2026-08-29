@@ -16,6 +16,11 @@ class CountryLink(models.Model):
 
 
 class Article(models.Model):
+    EDITOR_MODE_CHOICES = [
+        ('legacy', 'Legacy'),
+        ('modern', 'Modern'),
+    ]
+
     title = models.CharField(max_length=200)
     content = models.TextField()
     published_date = models.DateTimeField(auto_now_add=True)
@@ -25,6 +30,19 @@ class Article(models.Model):
     view_count = models.PositiveIntegerField(default=0)
     likes = models.PositiveIntegerField(default=0)
     dislikes = models.PositiveIntegerField(default=0)
+    editor_mode = models.CharField(
+        max_length=10,
+        choices=EDITOR_MODE_CHOICES,
+        default='legacy',
+        help_text="'legacy' uses plain text rendering; 'modern' renders rich HTML content"
+    )
+    author = models.ForeignKey(
+        'auth.User',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='articles'
+    )
 
     def __str__(self):
         return self.title

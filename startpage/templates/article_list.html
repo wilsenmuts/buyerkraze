@@ -22,6 +22,17 @@
     </div>
   </section>
 
+  <!-- Create Article CTA for authenticated users -->
+  {% if user.is_authenticated %}
+  <section class="pb-8 px-5">
+    <div class="max-w-7xl mx-auto text-right">
+      <a href="{% url 'create_article' %}" class="inline-flex items-center gap-2 btn-primary text-white px-6 py-3 rounded-xl font-semibold text-sm shadow-lg hover:shadow-xl transition-all">
+        <i class="fas fa-feather-alt"></i> Write New Article
+      </a>
+    </div>
+  </section>
+  {% endif %}
+
   <!-- Articles -->
   <section class="pb-20 px-5">
     <div class="max-w-7xl mx-auto">
@@ -47,6 +58,11 @@
           </div>
           <div class="md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
             <div class="flex items-center gap-3 text-gray-400 text-sm mb-4">
+              {% if featured.editor_mode == 'modern' %}
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-purple-100 text-purple-700 border border-purple-200">
+                <i class="fas fa-wand-magic-sparkles"></i> Modern
+              </span>
+              {% endif %}
               <span class="flex items-center gap-1.5"><i class="far fa-calendar"></i>{{ featured.published_date|date:"M d, Y" }}</span>
               <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
               <span class="flex items-center gap-1.5"><i class="far fa-eye"></i>{{ featured.view_count }} views</span>
@@ -92,6 +108,11 @@
             </div>
             <div class="p-6 flex flex-col flex-1">
               <div class="flex items-center gap-3 text-gray-400 text-xs mb-3">
+                {% if article.editor_mode == 'modern' %}
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-purple-100 text-purple-700 border border-purple-200">
+                  <i class="fas fa-wand-magic-sparkles"></i> Modern
+                </span>
+                {% endif %}
                 <span class="flex items-center gap-1"><i class="far fa-calendar"></i>{{ article.published_date|date:"M d, Y" }}</span>
                 <span class="w-1 h-1 bg-gray-200 rounded-full"></span>
                 <span class="flex items-center gap-1"><i class="far fa-eye"></i>{{ article.view_count }}</span>

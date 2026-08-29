@@ -1,0 +1,347 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{% if editing %}Edit Article{% else %}Create Article{% endif %} - BuyerKraze{% endblock %}
+{% block content %}
+<div class="min-h-screen py-24 px-4">
+  <div class="max-w-7xl mx-auto">
+    
+    <!-- Header -->
+    <div class="text-center mb-10">
+      <div class="inline-flex items-center gap-2 bg-white/15 text-white/90 text-xs font-semibold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4 backdrop-blur-sm border border-white/20">
+        <i class="fas {% if editing %}fa-edit{% else %}fa-feather-alt{% endif %} text-purple-200"></i>
+        {% if editing %}Edit Article{% else %}Writer's Studio{% endif %}
+      </div>
+      <h1 class="text-4xl md:text-5xl font-extrabold text-white leading-tight">
+        {% if editing %}Revise Your <span class="text-purple-200">Article</span>{% else %}Craft Your <span class="text-purple-200">Article</span>{% endif %}
+      </h1>
+      <p class="text-white/60 mt-3 max-w-lg mx-auto">
+        {% if editing %}Update your article below. Changes will be saved immediately on submit.{% else %}Use the modern editor below to write with rich formatting. Switch to legacy for plain text.{% endif %}
+      </p>
+    </div>
+
+    <!-- Messages -->
+    {% if messages %}
+      {% for message in messages %}
+        <div class="max-w-2xl mx-auto mb-6 p-4 rounded-xl text-sm font-medium {% if message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <!-- Editor Mode Toggle Bar -->
+    <div class="max-w-5xl mx-auto mb-6 flex items-center justify-between bg-white/10 backdrop-blur-sm rounded-xl px-6 py-3 border border-white/10">
+      <div class="flex items-center gap-3">
+        <span class="text-white/70 text-sm font-medium">Editor Mode:</span>
+        <span id="mode-badge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider
+          {% if form.editor_mode.value == 'modern' or not form.editor_mode.value %}bg-purple-500 text-white{% else %}bg-gray-500 text-white{% endif %}">
+          <i class="fas {% if form.editor_mode.value == 'modern' or not form.editor_mode.value %}fa-wand-magic-sparkles{% else %}fa-file-lines{% endif %}"></i>
+          <span id="mode-label">{% if form.editor_mode.value == 'modern' or not form.editor_mode.value %}Modern{% else %}Legacy{% endif %}</span>
+        </span>
+      </div>
+      <div class="flex items-center gap-2 text-xs text-white/50">
+        <i class="fas fa-info-circle"></i>
+        <span>Modern: bold, color, italic • Legacy: plain text</span>
+      </div>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" id="article-form">
+      {% csrf_token %}
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Left Column: Editor -->
+        <div class="space-y-5">
+
+          <!-- Title -->
+          <div>
+            <label class="block text-sm font-semibold text-white/80 mb-2" for="id_title">
+              <i class="fas fa-heading text-purple-300 mr-1"></i> Title
+            </label>
+            {{ form.title }}
+            {% if form.title.errors %}
+              <div class="text-red-300 text-xs mt-1">{% for error in form.title.errors %}{{ error }}{% endfor %}</div>
+            {% endif %}
+          </div>
+
+          <!-- Editor Mode Select -->
+          <div>
+            <label class="block text-sm font-semibold text-white/80 mb-2" for="id_editor_mode">
+              <i class="fas fa-sliders-h text-purple-300 mr-1"></i> Content Mode
+            </label>
+            <select name="editor_mode" id="id_editor_mode" class="w-full border-2 border-gray-300 rounded-xl p-3 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all"
+                    onchange="toggleEditorMode(this.value)">
+              <option value="modern" {% if form.editor_mode.value == 'modern' or not form.editor_mode.value %}selected{% endif %}>Modern (Rich Text)</option>
+              <option value="legacy" {% if form.editor_mode.value == 'legacy' %}selected{% endif %}>Legacy (Plain Text)</option>
+            </select>
+          </div>
+
+          <!-- Content Editor -->
+          <div>
+            <label class="block text-sm font-semibold text-white/80 mb-2" for="id_content">
+              <i class="fas fa-paragraph text-purple-300 mr-1"></i> Content
+            </label>
+
+            <div class="relative">
+              <!-- Mode Toggle already exists above -->
+
+              <!-- Legacy / Plain Textarea (always present but toggled) -->
+              {{ form.content }}
+
+              <!-- Rich Preview / Editor Area (contenteditable for vanilla rich text) -->
+              <div id="rich-editor"
+                  class="bg-white rounded-xl min-h-[420px] p-4 text-gray-800 border border-gray-300 focus-within:border-purple-500 prose prose-lg max-w-none"
+                  style="display: none; min-height: 420px; overflow-y: auto;"
+                  contenteditable="true">
+              </div>
+            </div>
+
+            {% if form.content.errors %}
+              <div class="text-red-300 text-xs mt-1">{% for error in form.content.errors %}{{ error }}{% endfor %}</div>
+            {% endif %}
+          </div>
+
+          <!-- Images -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-semibold text-white/80 mb-2" for="id_featured_image">
+                <i class="fas fa-image text-purple-300 mr-1"></i> Featured Image
+              </label>
+              <div class="relative">
+                {{ form.featured_image }}
+                {% if form.featured_image.value %}
+                  <div class="mt-2 text-xs text-white/50">Current: {{ form.featured_image.value }}</div>
+                {% endif %}
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-white/80 mb-2" for="id_top_image">
+                <i class="fas fa-image text-purple-300 mr-1"></i> Top Image
+              </label>
+              <div class="relative">
+                {{ form.top_image }}
+                {% if form.top_image.value %}
+                  <div class="mt-2 text-xs text-white/50">Current: {{ form.top_image.value }}</div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit -->
+          <div class="flex gap-3 pt-4">
+            <button type="submit" class="flex-1 btn-primary text-white font-bold py-3.5 px-6 rounded-xl text-lg">
+              <i class="fas {% if editing %}fa-save{% else %}fa-paper-plane{% endif %} mr-2"></i>
+              {% if editing %}Update Article{% else %}Publish Article{% endif %}
+            </button>
+            <a href="{% url 'article_list' %}" class="px-6 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold transition-all text-center">
+              <i class="fas fa-times mr-1"></i> Cancel
+            </a>
+          </div>
+        </div>
+
+        <!-- Right Column: Live Preview -->
+        <div class="lg:sticky lg:top-24 self-start">
+          <div class="glass-effect rounded-2xl overflow-hidden shadow-2xl">
+            <div class="bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-3 flex items-center justify-between">
+              <span class="text-white font-semibold text-sm flex items-center gap-2">
+                <i class="fas fa-eye"></i> Live Preview
+              </span>
+              <span class="text-white/60 text-xs">Updates via Channel Messaging</span>
+            </div>
+
+            <iframe
+              id="live-preview-frame"
+              class="w-full h-[80vh] border-0 bg-white"
+              sandbox="allow-scripts allow-same-origin"
+              title="Article Preview">
+            </iframe>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Quill.js CDN -->
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.min.js"></script>
+
+<style>
+  /* ─── Quill v2 overrides ──────────────────────────── */
+  #quill-container .ql-container {
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    font-size: 1rem;
+  }
+  #quill-container .ql-editor {
+    min-height: 360px;
+    line-height: 1.8;
+    font-family: 'Inter', sans-serif;
+  }
+  #quill-container .ql-editor p  { margin-bottom: 0.75rem; }
+  #quill-container .ql-editor h1,
+  #quill-container .ql-editor h2,
+  #quill-container .ql-editor h3 { margin-top: 1.5rem; margin-bottom: 0.5rem; font-weight: 700; }
+  #quill-container .ql-editor blockquote {
+    border-left: 4px solid #667eea; padding-left: 1rem;
+    color: #555; font-style: italic;
+  }
+  #quill-container .ql-editor pre {
+    background: #f3f4f6; border-radius: 8px;
+    padding: 1rem; font-family: monospace;
+  }
+  #quill-container .ql-editor ul,
+  #quill-container .ql-editor ol { padding-left: 1.5rem; }
+  #quill-container .ql-toolbar {
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    border-color: #d1d5db;
+  }
+  /* Snow theme default separators between toolbar groups */
+  #quill-container .ql-toolbar .ql-formats { margin-right: 10px; }
+
+  /* ─── Hide textarea when quill container is visible ──*/
+  #quill-container:not([style*="display: none"]) ~ textarea,
+  #quill-container:not([style*="display: none"]) + textarea,
+  textarea.quill-active { display: none; }
+
+  /* ─── File input styling ──────────────────────────── */
+  input[type="file"] {
+    width: 100%;
+    padding: 0.75rem;
+    background: rgba(255,255,255,0.08);
+    border: 2px dashed rgba(255,255,255,0.25);
+    border-radius: 12px;
+    color: rgba(255,255,255,0.7);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  input[type="file"]:hover { border-color: rgba(255,255,255,0.5); }
+  input[type="file"]::file-selector-button {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: none;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    margin-right: 1rem;
+    cursor: pointer;
+  }
+
+  /* ─── Preview scrollbar ───────────────────────────── */
+  #preview-panel::-webkit-scrollbar { width: 6px; }
+  #preview-panel::-webkit-scrollbar-track { background: transparent; }
+  #preview-panel::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+
+  /* ─── Legacy textarea ─────────────────────────────── */
+  #id_content { font-family: 'Inter', monospace; }
+</style>
+
+<!-- Quill CDN can be removed if not used elsewhere -->
+
+<script>
+(function() {
+  'use strict';
+
+  const textarea = document.getElementById('id_content');
+  const richEditor = document.getElementById('rich-editor');
+  const modeSelect = document.getElementById('id_editor_mode');
+  const titleInput = document.getElementById('id_title');
+
+  const previewTitle = document.getElementById('preview-title');
+  const previewDate = document.getElementById('preview-date');
+  const previewContent = document.getElementById('preview-content');
+
+  let debounceTimer = null;
+
+  function debounce(fn, delay = 150) {
+    return (...args) => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => fn(...args), delay);
+    };
+  }
+
+  function toggleEditorMode(mode) {
+    const badge = document.getElementById('mode-badge');
+    const badgeIcon = badge.querySelector('i');
+    const badgeLabel = document.getElementById('mode-label');
+
+    if (mode === 'modern') {
+      // Modern: Use contenteditable div
+      textarea.style.display = 'none';
+      richEditor.style.display = 'block';
+
+      // Sync from textarea to rich editor
+      richEditor.innerHTML = textarea.value || '<p>Start writing here...</p>';
+
+      badge.classList.remove('bg-gray-500');
+      badge.classList.add('bg-purple-500');
+      badgeIcon.className = 'fas fa-wand-magic-sparkles';
+      badgeLabel.textContent = 'Modern';
+    } else {
+      // Legacy: Plain textarea
+      textarea.style.display = 'block';
+      richEditor.style.display = 'none';
+
+      // Sync back to textarea (strip HTML)
+      if (richEditor.innerHTML) {
+        const temp = document.createElement('div');
+        temp.innerHTML = richEditor.innerHTML;
+        textarea.value = temp.textContent || temp.innerText || '';
+      }
+
+      badge.classList.remove('bg-purple-500');
+      badge.classList.add('bg-gray-500');
+      badgeIcon.className = 'fas fa-file-lines';
+      badgeLabel.textContent = 'Legacy';
+    }
+    refreshPreview();
+  }
+
+  function refreshPreview() {
+    previewTitle.textContent = titleInput.value.trim() || 'Your Title Here';
+    previewDate.textContent = new Date().toLocaleDateString('en-US', {
+      year: 'numeric', month: 'long', day: 'numeric'
+    });
+
+    const isModern = modeSelect.value === 'modern';
+    let contentHTML = '';
+
+    if (isModern) {
+      contentHTML = richEditor.innerHTML || '';
+    } else {
+      const escaped = (textarea.value || '')
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+      contentHTML = `<p class="whitespace-pre-wrap">${escaped}</p>`;
+    }
+
+    previewContent.innerHTML = contentHTML.trim()
+      ? contentHTML
+      : '<p class="text-gray-400 italic">Start writing to see your preview...</p>';
+  }
+
+  // Initialize
+  document.addEventListener('DOMContentLoaded', () => {
+    // Title live update
+    titleInput.addEventListener('input', refreshPreview);
+
+    // Mode change
+    modeSelect.addEventListener('change', (e) => {
+      toggleEditorMode(e.target.value);
+    });
+
+    // Live updates from both editors
+    richEditor.addEventListener('input', debounce(refreshPreview));
+    textarea.addEventListener('input', debounce(refreshPreview));
+
+    // Initial mode setup
+    const initialMode = modeSelect.value || 'modern';
+    toggleEditorMode(initialMode);
+
+    // Initial preview
+    refreshPreview();
+  });
+})();
+</script>
+{% endblock %}

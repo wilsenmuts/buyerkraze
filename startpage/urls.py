@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import start_view, article_list, event_list, article_detail, event_detail, redirect_to_country
+from .views import start_view, article_list, event_list, article_detail, event_detail, redirect_to_country, register_view, login_view, logout_view, create_article, edit_article
 from .api_views import ArticleListCreateAPIView, ArticleDetailAPIView, article_like, article_dislike
 from .admin_views import admin_dashboard, get_active_sessions, toggle_site_status, update_maintenance_message, clear_inactive_sessions
 
@@ -10,6 +10,15 @@ urlpatterns = [
     path('events/', event_list, name='event_list'),
     path('redirect/', redirect_to_country, name='redirect_to_country'),
     path('events/<int:pk>/', event_detail, name='event_detail'),
+    
+    # User authentication
+    path('register/', register_view, name='register'),
+    path('login/', login_view, name='login'),
+    path('logout/', logout_view, name='logout'),
+    
+    # Article creation / editing (modern editor)
+    path('articles/create/', create_article, name='create_article'),
+    path('articles/<int:pk>/edit/', edit_article, name='edit_article'),
     
     # API endpoints
     path('api/articles/', ArticleListCreateAPIView.as_view(), name='api_article_list'),

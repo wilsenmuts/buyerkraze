@@ -1,8 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import F
 from django.utils import timezone
+from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from .models import CountryLink, Article, Event
-from .forms import SubscriptionForm
+from .forms import SubscriptionForm, UserRegisterForm, ArticleForm
 import geoip2.database
 import os
 import random
@@ -69,6 +72,74 @@ def article_detail(request, pk):
     Article.objects.filter(pk=pk).update(view_count=F('view_count') + 1)
     article.refresh_from_db()
     return render(request, 'article_detail.html', {'article': article})
+
+# ─── User Authentication ─────────────────────────────────────────
+
+def register_view(request):
+    if request.method == 'POST':
+        form = UserRegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, f'Account created successfully! Welcome, {user.username}.')
+            return redirect('article_list')
+    else:
+        form = UserRegisterForm()
+    return render(request, 'registration/register.html', {'form': form})
+
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            next_url = request.GET.get('next', 'article_list')
+            messages.success(request, f'Welcome back, {user.username}!')
+            return redirect(next_url)
+        else:
+            messages.error(request, 'Invalid username or password.')
+    return render(request, 'registration/login.html')
+
+def logout_view(request):
+    logout(request)
+    messages.info(request, 'You have been logged out.')
+    return redirect('article_list')
+
+# ─── Article Creation (Modern Editor) ────────────────────────────
+
+@login_required
+def create_article(request):
+    if request.method == 'POST':
+        form = ArticleForm(request.POST, request.FILES)
+        if form.is_valid():
+            article = form.save(commit=False)
+            article.author = request.user
+            # If editor_mode is modern, store content as-is (preserves HTML)
+            article.save()
+            messages.success(request, 'Article created successfully!')
+            return redirect('article_detail', pk=article.pk)
+    else:
+        form = ArticleForm(initial={'editor_mode': 'modern'})
+    return render(request, 'create_article.html', {'form': form})
+
+@login_required
+def edit_article(request, pk):
+    article = get_object_or_404(Article, pk=pk)
+    # Only author or superuser can edit
+    if request.user != article.author and not request.user.is_superuser:
+        messages.error(request, 'You do not have permission to edit this article.')
+        return redirect('article_detail', pk=pk)
+    
+    if request.method == 'POST':
+        form = ArticleForm(request.POST, request.FILES, instance=article)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Article updated successfully!')
+            return redirect('article_detail', pk=article.pk)
+    else:
+        form = ArticleForm(instance=article)
+    return render(request, 'create_article.html', {'form': form, 'editing': True, 'article': article})
 
 def event_list(request):
     # Only show events that haven't passed yet

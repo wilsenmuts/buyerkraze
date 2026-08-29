@@ -229,6 +229,11 @@
                     <a href="{% url 'start' %}" class="nav-link {% if request.resolver_match.url_name == 'start' %}active{% endif %}">Home</a>
                     <a href="{% url 'article_list' %}" class="nav-link {% if 'article' in request.resolver_match.url_name %}active{% endif %}">Articles</a>
                     <a href="{% url 'event_list' %}" class="nav-link {% if 'event' in request.resolver_match.url_name %}active{% endif %}">Events</a>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'create_article' %}" class="nav-link {% if request.resolver_match.url_name == 'create_article' %}active{% endif %}">
+                        <i class="fas fa-feather-alt text-xs"></i> Write
+                    </a>
+                    {% endif %}
                     {% if request.user.is_superuser %}
                     <a href="{% url 'admin_dashboard' %}" class="nav-link flex items-center gap-1.5" style="color:#fde68a;">
                         <i class="fas fa-shield-halved text-xs"></i> Dashboard
@@ -236,11 +241,38 @@
                     {% endif %}
                 </nav>
 
-                <!-- Desktop right CTA -->
-                <div class="hidden md:block">
-                    <a href="#select-country" class="nav-cta">
-                        Get Started <i class="fas fa-arrow-right text-xs"></i>
+                <!-- Desktop right CTA / Auth -->
+                <div class="hidden md:flex items-center gap-3">
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'create_article' %}" class="nav-cta">
+                        <i class="fas fa-feather-alt text-xs"></i> Write
                     </a>
+                    <div class="relative group">
+                        <button class="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white font-medium px-3 py-2 rounded-xl transition-all text-sm backdrop-blur-sm border border-white/20">
+                            <i class="fas fa-user-circle"></i>
+                            <span>{{ user.username }}</span>
+                            <i class="fas fa-chevron-down text-[10px]"></i>
+                        </button>
+                        <div class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 overflow-hidden">
+                            <div class="py-1">
+                                <a href="{% url 'create_article' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors">
+                                    <i class="fas fa-feather-alt text-purple-400 w-4 text-center"></i> New Article
+                                </a>
+                                <hr class="border-gray-100">
+                                <a href="{% url 'logout' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors">
+                                    <i class="fas fa-sign-out-alt text-red-400 w-4 text-center"></i> Sign Out
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <a href="{% url 'login' %}" class="nav-cta">
+                        <i class="fas fa-sign-in-alt text-xs"></i> Sign In
+                    </a>
+                    <a href="{% url 'register' %}" class="inline-flex items-center gap-1.5 font-semibold text-sm text-white/80 hover:text-white transition-colors">
+                        Register
+                    </a>
+                    {% endif %}
                 </div>
 
                 <!-- Hamburger (mobile only) -->
@@ -281,6 +313,11 @@
             <a href="{% url 'event_list' %}" class="drawer-link {% if 'event' in request.resolver_match.url_name %}active{% endif %}">
                 <span class="drawer-icon"><i class="fas fa-calendar-days"></i></span> Events
             </a>
+            {% if user.is_authenticated %}
+            <a href="{% url 'create_article' %}" class="drawer-link {% if request.resolver_match.url_name == 'create_article' %}active{% endif %}">
+                <span class="drawer-icon"><i class="fas fa-feather-alt"></i></span> Write Article
+            </a>
+            {% endif %}
             {% if request.user.is_superuser %}
             <a href="{% url 'admin_dashboard' %}" class="drawer-link">
                 <span class="drawer-icon"><i class="fas fa-shield-halved"></i></span> Dashboard
@@ -288,11 +325,29 @@
             {% endif %}
         </nav>
 
-        <!-- Drawer footer: CTA + socials -->
-        <div class="pt-6 border-t border-white/10 space-y-5">
-            <a href="#select-country" class="block w-full text-center font-semibold text-white py-3 rounded-xl btn-primary">
-                Get Started <i class="fas fa-arrow-right ml-1 text-xs"></i>
+        <!-- Drawer footer: Auth + CTA + socials -->
+        <div class="pt-6 border-t border-white/10 space-y-4">
+            {% if user.is_authenticated %}
+            <div class="flex items-center gap-3 px-2">
+                <div class="w-9 h-9 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm">
+                    {{ user.username|first|upper }}
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-white text-sm font-semibold truncate">{{ user.username }}</p>
+                    <p class="text-white/40 text-xs truncate">{{ user.email }}</p>
+                </div>
+            </div>
+            <a href="{% url 'logout' %}" class="block w-full text-center font-semibold text-white/70 hover:text-white py-2.5 rounded-xl border border-white/20 hover:border-white/40 transition-all text-sm">
+                <i class="fas fa-sign-out-alt mr-1"></i> Sign Out
             </a>
+            {% else %}
+            <a href="{% url 'login' %}" class="block w-full text-center font-semibold text-white py-3 rounded-xl btn-primary">
+                <i class="fas fa-sign-in-alt mr-1"></i> Sign In
+            </a>
+            <a href="{% url 'register' %}" class="block w-full text-center font-semibold text-white/70 hover:text-white py-2.5 rounded-xl border border-white/20 hover:border-white/40 transition-all text-sm">
+                <i class="fas fa-user-plus mr-1"></i> Register
+            </a>
+            {% endif %}
             <div class="flex justify-center gap-6">
                 {% if social_media.facebook %}
                 <a href="{{ social_media.facebook }}" target="_blank" rel="noopener noreferrer" class="text-white/40 hover:text-white transition-colors" aria-label="Facebook">
