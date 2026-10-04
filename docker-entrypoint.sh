@@ -5,7 +5,7 @@ echo "==> Applying database migrations..."
 python manage.py migrate --noinput
 
 echo "==> Collecting static files..."
-python manage.py collectstatic --noinput 2>/dev/null || echo "    (skipped collectstatic)"
+python manage.py collectstatic --noinput
 
 # Optionally create a superuser on first boot (env-driven, non-interactive).
 if [ -n "${DJANGO_SUPERUSER_USERNAME:-}" ]; then

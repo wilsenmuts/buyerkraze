@@ -1,0 +1,39 @@
+# BuyerKraze - Docker Compose template (Traefik). Copy to docker-compose.yml
+# (untracked) and adjust. All secrets/config come from .env (also untracked).
+# The SQL Server instance is external and shared; no db service here.
+name: buyerkraze
+
+services:
+  web:
+    build: .
+    container_name: buyerkraze
+    restart: unless-stopped
+    command: gunicorn buyerkraze.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 120
+    env_file:
+      - .env
+    extra_hosts:
+      # lets DB_HOST=host.docker.internal reach SQL Server on the Docker host
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - media_data:/app/media
+    networks:
+      - proxy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.buyerkraze.rule=Host(`buyerkraze.com`) || Host(`www.buyerkraze.com`)"
+      - "traefik.http.routers.buyerkraze.entrypoints=websecure"
+      - "traefik.http.routers.buyerkraze.tls.certresolver=letsencrypt"
+      - "traefik.http.services.buyerkraze.loadbalancer.server.port=8000"
+
+volumes:
+  media_data:
+
+networks:
+  proxy:
+    external: true

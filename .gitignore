@@ -35,3 +35,6 @@ docker-compose.override.yml
 *.conf
 local_settings.py
 upstream.py
+# Local/server-specific config (not shared)
+.env
+docker-compose.yml

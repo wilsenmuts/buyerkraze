@@ -39,6 +39,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -146,24 +147,45 @@ ALLOWED_HOSTS = _env_list(
     "localhost,127.0.0.1,www.buyerkraze.com",
 )
 
-# Database (SQLite by default). Set DB_ENGINE to a postgres engine and the
-# matching DB_* variables to use PostgreSQL.
+CSRF_TRUSTED_ORIGINS = _env_list("CSRF_TRUSTED_ORIGINS")
+
+# Database: SQLite by default; set DB_ENGINE=mssql to use an external
+# SQL Server instance (mssql-django + ODBC Driver 18).
 _DB_ENGINE = os.environ.get("DB_ENGINE", "django.db.backends.sqlite3")
-DATABASES = {
-    "default": {
-        "ENGINE": _DB_ENGINE,
-        "NAME": os.environ.get("DB_NAME", BASE_DIR / "db.sqlite3"),
-    }
-}
-if _DB_ENGINE.startswith("django.db.backends.postgresql"):
-    DATABASES["default"].update(
-        {
-            "USER": os.environ.get("DB_USER", "buyerkraze"),
-            "PASSWORD": os.environ.get("DB_PASSWORD", "buyerkraze"),
-            "HOST": os.environ.get("DB_HOST", "db"),
-            "PORT": os.environ.get("DB_PORT", "5432"),
+if _DB_ENGINE in ("mssql", "sql_server.pyodbc"):
+    DATABASES = {
+        "default": {
+            "ENGINE": "mssql",
+            "NAME": os.environ["DB_NAME"],
+            "USER": os.environ["DB_USER"],
+            "PASSWORD": os.environ["DB_PASSWORD"],
+            "HOST": os.environ["DB_HOST"],
+            "PORT": os.environ.get("DB_PORT", "1433"),
+            "OPTIONS": {
+                "driver": os.environ.get("DB_DRIVER", "ODBC Driver 18 for SQL Server"),
+                "extra_params": "Encrypt={};TrustServerCertificate={}".format(
+                    os.environ.get("DB_ENCRYPT", "yes"),
+                    os.environ.get("DB_TRUST_SERVER_CERTIFICATE", "yes"),
+                ),
+            },
         }
-    )
+    }
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": _DB_ENGINE,
+            "NAME": os.environ.get("DB_NAME", BASE_DIR / "db.sqlite3"),
+        }
+    }
+    if _DB_ENGINE.startswith("django.db.backends.postgresql"):
+        DATABASES["default"].update(
+            {
+                "USER": os.environ.get("DB_USER", "buyerkraze"),
+                "PASSWORD": os.environ.get("DB_PASSWORD", "buyerkraze"),
+                "HOST": os.environ.get("DB_HOST", "db"),
+                "PORT": os.environ.get("DB_PORT", "5432"),
+            }
+        )
 
 # GeoIP / sessions
 GEOIP_PATH = os.environ.get("GEOIP_PATH", BASE_DIR / "geoip")
