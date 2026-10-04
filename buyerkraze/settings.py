@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'startpage',
     'subscriptions',
+    'django_issue_ticca',
     #'geoip2_extras',
 ]
 
@@ -48,6 +49,8 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "startpage.middleware.SessionTrackingMiddleware",
     "startpage.middleware.SiteMaintenanceMiddleware",
+    'django_issue_ticca.middleware.ResponseTimeLoggingMiddleware',
+    'django_issue_ticca.middleware.ExceptionLoggingMiddleware',
 ]
 
 ROOT_URLCONF = "buyerkraze.urls"
@@ -202,6 +205,20 @@ LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
+
+ISSUE_TICCA = {
+    'SLOW_RESPONSE_THRESHOLD': 10.0,   # seconds; 0 or None disables slow-response logging
+    'AUTO_RESOLVE_ON_SUCCESS': True,   # close open incidents when the URL is healthy again
+    'ENABLED': True,                   # master on/off switch for the middlewares
+    'ACCESS_KEY': 'K7mQ2xP9vR4nT8yL3wZ6aB1cD5eF0gHj',  # REQUIRED: callers must sign every request
+    'TRACK_HOURLY_USERS': True,        # record unique users / requests per hour
+    'HOURLY_STATS_RETENTION_DAYS': 7,  # keep 7 days; older rows pruned on endpoint call
+
+    # # Optional subsystem connection details (used by the health checks)
+    # 'REDIS_URL': 'redis://localhost:6379/0',
+    # 'RABBITMQ_URL': 'amqp://guest:guest@localhost:5672//',
+    # 'CELERY_APP': 'myproject.celery.app',
+}
 
 # Social media links
 SOCIAL_MEDIA_LINKS = {

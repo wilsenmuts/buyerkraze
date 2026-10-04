@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('startpage.urls')),
     path('subscriptions/', include('subscriptions.urls')),
+    path('issue-ticca/', include('django_issue_ticca.urls')),
 ]
 # Gunicorn does not serve uploads; serve them from Django (static files are
 # handled by WhiteNoise).
