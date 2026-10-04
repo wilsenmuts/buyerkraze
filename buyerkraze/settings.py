@@ -204,24 +204,44 @@ STATIC_ROOT = os.environ.get("STATIC_ROOT", BASE_DIR / "static")
 STATIC_URL = "/static/"
 
 # Internationalization
-LANGUAGE_CODE = "en-us"
-TIME_ZONE = "UTC"
-USE_I18N = True
-USE_TZ = True
+LANGUAGE_CODE = os.environ.get("LANGUAGE_CODE", "en-us")
+TIME_ZONE = os.environ.get("TIME_ZONE", "UTC")
+USE_I18N = _env_bool("USE_I18N", default=True)
+USE_TZ = _env_bool("USE_TZ", default=True)
+
+
+def _env_float(name, default):
+    try:
+        return float(os.environ.get(name, default))
+    except (TypeError, ValueError):
+        return default
+
+
+def _env_int(name, default):
+    try:
+        return int(os.environ.get(name, default))
+    except (TypeError, ValueError):
+        return default
+
 
 ISSUE_TICCA = {
-    'SLOW_RESPONSE_THRESHOLD': 10.0,   # seconds; 0 or None disables slow-response logging
-    'AUTO_RESOLVE_ON_SUCCESS': True,   # close open incidents when the URL is healthy again
-    'ENABLED': True,                   # master on/off switch for the middlewares
-    'ACCESS_KEY': 'K7mQ2xP9vR4nT8yL3wZ6aB1cD5eF0gHj',  # REQUIRED: callers must sign every request
-    'TRACK_HOURLY_USERS': True,        # record unique users / requests per hour
-    'HOURLY_STATS_RETENTION_DAYS': 7,  # keep 7 days; older rows pruned on endpoint call
-
-    # # Optional subsystem connection details (used by the health checks)
-    # 'REDIS_URL': 'redis://localhost:6379/0',
-    # 'RABBITMQ_URL': 'amqp://guest:guest@localhost:5672//',
-    # 'CELERY_APP': 'myproject.celery.app',
+    'SLOW_RESPONSE_THRESHOLD': _env_float("ISSUE_TICCA_SLOW_RESPONSE_THRESHOLD", 10.0),
+    'AUTO_RESOLVE_ON_SUCCESS': _env_bool("ISSUE_TICCA_AUTO_RESOLVE_ON_SUCCESS", default=True),
+    'ENABLED': _env_bool("ISSUE_TICCA_ENABLED", default=True),
+    'ACCESS_KEY': os.environ.get("ISSUE_TICCA_ACCESS_KEY", ""),  # required for the signed endpoints
+    'TRACK_HOURLY_USERS': _env_bool("ISSUE_TICCA_TRACK_HOURLY_USERS", default=True),
+    'HOURLY_STATS_RETENTION_DAYS': _env_int("ISSUE_TICCA_HOURLY_STATS_RETENTION_DAYS", 7),
 }
+
+# Production hardening (Contabo VPS behind a TLS-terminating reverse proxy such as nginx/Caddy).
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    USE_X_FORWARDED_HOST = _env_bool("USE_X_FORWARDED_HOST", default=True)
+    SECURE_SSL_REDIRECT = _env_bool("SECURE_SSL_REDIRECT", default=False)
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = _env_int("SECURE_HSTS_SECONDS", 0)
+    SECURE_CONTENT_TYPE_NOSNIFF = True
 
 # Social media links
 SOCIAL_MEDIA_LINKS = {
