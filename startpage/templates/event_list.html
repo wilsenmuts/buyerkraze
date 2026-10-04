@@ -58,7 +58,7 @@
                     <!-- Image -->
                     <div class="relative h-56 overflow-hidden">
                         {% if event.featured_image %}
-                            <img src="{{ event.featured_image.url }}"
+                            <img src="{{ event.featured_image.url }}" loading="lazy" decoding="async"
                                  alt="{{ event.title }}"
                                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
                         {% else %}

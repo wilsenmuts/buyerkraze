@@ -7,10 +7,19 @@
     <section class="relative h-screen overflow-hidden">
         <!-- Video Background -->
         {% if random_video %}
-        <video autoplay muted loop playsinline class="absolute top-0 left-0 w-full h-full object-cover">
+        <video id="hero-video" autoplay muted loop playsinline preload="metadata" poster="{% static 'landing_page_videos/posters/' %}{{ video_poster }}" class="absolute top-0 left-0 w-full h-full object-cover">
             <source src="{% static 'landing_page_videos/' %}{{ random_video }}" type="video/mp4">
             Your browser does not support the video tag.
         </video>
+        <script>
+            (function () {
+                var c = navigator.connection || {};
+                if (c.saveData || /(^|-)2g$/.test(c.effectiveType || '')) {
+                    var v = document.getElementById('hero-video');
+                    if (v) { v.pause(); v.removeAttribute('autoplay'); v.innerHTML = ''; v.load(); }
+                }
+            })();
+        </script>
         {% else %}
         <!-- Fallback Gradient Background -->
         <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-purple-900 via-indigo-900 to-black"></div>
@@ -129,6 +138,63 @@
                     <i class="fas fa-location-arrow mr-2"></i>Detect my location and redirect instantly
                 </a>
             </p>
+        </div>
+    </section>
+
+    <!-- What is BuyerKraze -->
+    <section id="what-is-buyerkraze" class="py-20 glass-effect">
+        <div class="container mx-auto px-4 max-w-5xl">
+            <h2 class="text-4xl font-bold mb-6 gradient-text">What is BuyerKraze?</h2>
+            <p class="text-xl text-gray-800 mb-10">
+                <strong>BuyerKraze is a reverse marketplace.</strong> Instead of searching through seller listings, buyers post what they want and the price they are willing to pay. Sellers browse those offers, accept the ones they can fulfil, negotiate terms, or express interest in supplying the product.
+            </p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-2xl font-bold mb-3 text-gray-900">How it works for buyers</h3>
+                    <ol class="list-decimal ml-6 space-y-2 text-gray-800">
+                        <li>Choose your country's BuyerKraze site.</li>
+                        <li>Post the product or service you want and your target price.</li>
+                        <li>Review sellers who accept, negotiate or express interest.</li>
+                        <li>Pick the deal that suits you best.</li>
+                    </ol>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-bold mb-3 text-gray-900">How it works for sellers</h3>
+                    <ol class="list-decimal ml-6 space-y-2 text-gray-800">
+                        <li>Browse buyer offers in your country.</li>
+                        <li>Accept an offer at the stated price, or negotiate.</li>
+                        <li>Express interest in products you can supply.</li>
+                        <li>Win business from buyers who already know what they want.</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Country directory (crawlable links) -->
+    <section id="country-sites" class="py-16 relative">
+        <div class="container mx-auto px-4 max-w-5xl">
+            <h2 class="text-3xl font-bold mb-6 text-center text-white">BuyerKraze country sites</h2>
+            <ul class="flex flex-wrap justify-center gap-3">
+                {% for country in countries %}
+                <li><a href="{{ country.url }}" rel="noopener" class="inline-block px-5 py-2 rounded-full glass-effect text-gray-800 font-semibold hover:underline">BuyerKraze {{ country.country_name }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="py-20 glass-effect">
+        <div class="container mx-auto px-4 max-w-4xl">
+            <h2 class="text-4xl font-bold mb-8 gradient-text">Frequently asked questions</h2>
+            <div class="space-y-6">
+                {% for q, a in faqs %}
+                <div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-1">{{ q }}</h3>
+                    <p class="text-gray-800">{{ a }}</p>
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </section>
 

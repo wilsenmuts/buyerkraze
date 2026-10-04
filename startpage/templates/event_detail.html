@@ -2,9 +2,7 @@
 {% load static %}
 
 {% block title %}{{ event.title }} - BuyerKraze{% endblock %}
-{% block meta_description %}{{ event.description|truncatewords:30 }}{% endblock %}
 {% block og_title %}{{ event.title }}{% endblock %}
-{% block og_description %}{{ event.description|truncatewords:25 }}{% endblock %}
 
 {% block content %}
     <section class="pt-20 pb-16 min-h-screen bg-gradient-to-b from-[#667eea]/10 to-transparent">
@@ -37,7 +35,7 @@
                 <!-- Featured Image -->
                 <div class="relative h-[420px] overflow-hidden">
                     {% if event.featured_image %}
-                        <img src="{{ event.featured_image.url }}"
+                        <img src="{{ event.featured_image.url }}" loading="lazy" decoding="async"
                              alt="{{ event.title }}"
                              class="w-full h-full object-cover">
                     {% else %}

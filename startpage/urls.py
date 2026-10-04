@@ -1,9 +1,20 @@
 from django.urls import path
+from django.contrib.sitemaps.views import sitemap
+from django.views.decorators.cache import cache_page
+from .sitemaps import StaticSitemap, ArticleSitemap, EventSitemap
+from .views import robots_txt, llms_txt, privacy_view, terms_view
+
+SITEMAPS = {'static': StaticSitemap, 'articles': ArticleSitemap, 'events': EventSitemap}
 from .views import start_view, article_list, event_list, article_detail, event_detail, redirect_to_country, register_view, login_view, logout_view, create_article, edit_article
 from .api_views import ArticleListCreateAPIView, ArticleDetailAPIView, article_like, article_dislike
 from .admin_views import admin_dashboard, get_active_sessions, toggle_site_status, update_maintenance_message, clear_inactive_sessions
 
 urlpatterns = [
+    path('robots.txt', robots_txt, name='robots_txt'),
+    path('llms.txt', llms_txt, name='llms_txt'),
+    path('sitemap.xml', cache_page(3600)(sitemap), {'sitemaps': SITEMAPS}, name='sitemap'),
+    path('privacy/', privacy_view, name='privacy'),
+    path('terms/', terms_view, name='terms'),
     path('', start_view, name='start'),
     path('articles/', article_list, name='article_list'),
     path('articles/<int:pk>/', article_detail, name='article_detail'),

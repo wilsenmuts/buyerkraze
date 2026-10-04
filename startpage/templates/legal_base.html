@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="pt-32 pb-16 px-4">
+  <article class="glass-effect max-w-4xl mx-auto p-8 sm:p-12 rounded-2xl text-gray-800 leading-relaxed">
+    <h1 class="text-4xl font-extrabold gradient-text mb-2">{% block legal_title %}{% endblock %}</h1>
+    <p class="text-sm text-gray-600 mb-4">Effective date: [DD Month YYYY] &middot; Last updated: [DD Month YYYY]</p>
+    <p class="mb-8 p-3 rounded bg-yellow-100 text-yellow-900 text-sm"><strong>Draft:</strong> replace every [bracketed placeholder] and have a qualified lawyer review this document before publishing.</p>
+    <div class="space-y-4 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:mt-8 [&_h2]:text-gray-900 [&_h3]:font-bold [&_h3]:mt-4 [&_ul]:list-disc [&_ul]:ml-6 [&_ul]:space-y-1 [&_a]:text-purple-700 [&_a]:underline">
+      {% block legal_body %}{% endblock %}
+    </div>
+  </article>
+</div>
+{% endblock %}

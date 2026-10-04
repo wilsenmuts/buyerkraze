@@ -14,21 +14,32 @@
     <link rel="manifest" href="{% static 'images/icon/site.webmanifest' %}">
     <!-- SEO -->
     <title>{% block title %}BuyerKraze - Reverse Marketplace for Buyers and Sellers{% endblock %}</title>
-    <meta name="description" content="{% block meta_description %}BuyerKraze: The ultimate reverse marketplace where buyers create offers and sellers compete to fulfill them. Join now for local and global deals!{% endblock %}">
-    <meta name="keywords" content="BuyerKraze, reverse marketplace, buyer offers, seller deals, ecommerce, global shopping, online marketplace">
-    <meta name="robots" content="index, follow">
+    <meta name="description" content="{% block meta_description %}{{ meta_description|default:'BuyerKraze is a reverse marketplace: buyers post what they want and the price they will pay, and sellers accept, negotiate or express interest. Choose your country to start.' }}{% endblock %}">
+    <meta name="robots" content="{% block robots %}index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1{% endblock %}">
     <meta name="author" content="BuyerKraze Team">
-    <meta property="og:title" content="{% block og_title %}BuyerKraze - Where Buyers Call the Shots{% endblock %}">
-    <meta property="og:description" content="{% block og_description %}Create offers for products you want, and let sellers compete to win your business. Discover a new way to shop with BuyerKraze!{% endblock %}">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="{% block og_url %}https://buyerkraze.com{% url 'start' %}{% endblock %}">
-    <meta property="og:image" content="{% static 'hero/og_image.jpg' %}">
+    <meta name="theme-color" content="#667eea">
+    {% if google_site_verification %}<meta name="google-site-verification" content="{{ google_site_verification }}">{% endif %}
+    {% if bing_site_verification %}<meta name="msvalidate.01" content="{{ bing_site_verification }}">{% endif %}
+    <meta property="og:title" content="{% block og_title %}{% block og_title_default %}BuyerKraze - Where Buyers Call the Shots{% endblock %}{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}{{ meta_description|default:'Post what you want and the price you will pay, and let sellers come to you. Discover a new way to shop with BuyerKraze.' }}{% endblock %}">
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:url" content="{% block og_url %}{{ canonical_default }}{% endblock %}">
+    <meta property="og:image" content="{{ seo_image|default:seo_default_image }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="BuyerKraze - reverse marketplace">
     <meta property="og:site_name" content="BuyerKraze">
+    <meta property="og:locale" content="en_US">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{% block twitter_title %}BuyerKraze - Reverse Marketplace{% endblock %}">
-    <meta name="twitter:description" content="{% block twitter_description %}Buyers post offers, sellers respond. Join BuyerKraze for a revolutionary shopping experience!{% endblock %}">
-    <meta name="twitter:image" content="{% static 'hero/og_image.jpg' %}">
-    <link rel="canonical" href="{% block canonical_url %}https://buyerkraze.com{% url 'start' %}{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}{{ meta_description|default:'Buyers post offers, sellers respond. Join BuyerKraze for a revolutionary shopping experience.' }}{% endblock %}">
+    <meta name="twitter:image" content="{{ seo_image|default:seo_default_image }}">
+    <link rel="canonical" href="{% block canonical_url %}{{ canonical_default }}{% endblock %}">
+    <link rel="sitemap" type="application/xml" href="{% url 'sitemap' %}">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <script type="application/ld+json">{{ jsonld_site }}</script>
+    {% if jsonld_page %}<script type="application/ld+json">{{ jsonld_page }}</script>{% endif %}
+    {% block extra_head %}{% endblock %}
     <!-- Tailwind + Fonts + Icons -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -403,6 +414,13 @@
                 </a>
                 {% endif %}
             </div>
+            <nav aria-label="Legal" class="flex justify-center flex-wrap gap-x-6 gap-y-1 mb-3 text-sm font-medium">
+                <a href="{% url 'article_list' %}" class="hover:underline">Articles</a>
+                <a href="{% url 'event_list' %}" class="hover:underline">Events</a>
+                <a href="{% url 'privacy' %}" class="hover:underline">Privacy Policy</a>
+                <a href="{% url 'terms' %}" class="hover:underline">Terms &amp; Conditions</a>
+                <a href="{% url 'sitemap' %}" class="hover:underline">Sitemap</a>
+            </nav>
             <p class="text-sm sm:text-base font-medium">&copy; 2026 BuyerKraze - Where Buyers Lead the Way!</p>
             <p class="text-xs mt-2 text-gray-600">Empowering buyers worldwide with innovative marketplace solutions</p>
         </div>

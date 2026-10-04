@@ -1,6 +1,8 @@
 from django.db import models
 import secrets
 
+from .image_utils import optimize_image_field
+
 class CountryLink(models.Model):
     country_name = models.CharField(max_length=100, unique=True)
     url = models.URLField()
@@ -44,6 +46,11 @@ class Article(models.Model):
         related_name='articles'
     )
 
+    def save(self, *args, **kwargs):
+        optimize_image_field(self.featured_image)
+        optimize_image_field(self.top_image)
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.title
 
@@ -61,6 +68,10 @@ class Event(models.Model):
     is_subscribable = models.BooleanField(default=False)
     contact_email = models.EmailField(blank=True)
     contact_number = models.CharField(max_length=50, blank=True)
+
+    def save(self, *args, **kwargs):
+        optimize_image_field(self.featured_image)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title

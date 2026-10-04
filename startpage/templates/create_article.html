@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %}{% if editing %}Edit Article{% else %}Create Article{% endif %} - BuyerKraze{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
 {% block content %}
 <div class="min-h-screen py-24 px-4">
   <div class="max-w-7xl mx-auto">

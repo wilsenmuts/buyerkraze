@@ -3,6 +3,8 @@
 
 {% block title %}{{ article.title }} - BuyerKraze{% endblock %}
 
+{% block og_type %}article{% endblock %}
+{% block og_title %}{{ article.title }}{% endblock %}
 {% block content %}
     <section class="py-8">
         <div class="container mx-auto px-4 max-w-4xl">
@@ -10,7 +12,7 @@
                 <!-- Top Image -->
                 {% if article.top_image %}
                 <div class="w-full h-96 overflow-hidden">
-                    <img src="{{ article.top_image.url }}" alt="{{ article.title }}" class="w-full h-full object-cover">
+                    <img src="{{ article.top_image.url }}" loading="eager" fetchpriority="high" decoding="async" alt="{{ article.title }}" class="w-full h-full object-cover">
                 </div>
                 {% else %}
                 <div class="w-full h-96 bg-gradient-to-br from-purple-400 to-indigo-500 flex items-center justify-center">
@@ -74,7 +76,7 @@
                     <!-- Featured Image -->
                     {% if article.featured_image %}
                     <div class="my-8 rounded-xl overflow-hidden shadow-lg">
-                        <img src="{{ article.featured_image.url }}" alt="Featured Image" class="w-full h-auto">
+                        <img src="{{ article.featured_image.url }}" loading="lazy" decoding="async" alt="Featured Image" class="w-full h-auto">
                     </div>
                     {% endif %}
                     
